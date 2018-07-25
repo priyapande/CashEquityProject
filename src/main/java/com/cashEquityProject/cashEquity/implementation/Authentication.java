@@ -23,11 +23,12 @@ public class Authentication implements ClientCredentialsInterface, config {
         String clientcode = clientCredentials.getClientCode();
         String inpPassword = clientCredentials.getPassword();
 
+        System.out.println(clientcode + inpPassword);
         ClientCredentials selectedUser = jdbcTemplate.queryForObject(authQuery,
                 new Object[]{clientcode, inpPassword},
                 new BeanPropertyRowMapper<>(ClientCredentials.class));
 
-        if (selectedUser != null) {
+        if (selectedUser == null) {
             return config.INVALID_USER;
         } else if (selectedUser.getPassword().equals(inpPassword)){
             return config.SUCCESS;
