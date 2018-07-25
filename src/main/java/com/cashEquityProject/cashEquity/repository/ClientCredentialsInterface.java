@@ -1,7 +1,9 @@
 package com.cashEquityProject.cashEquity.repository;
 
+import com.cashEquityProject.cashEquity.model.ClientCredentials;
+
 public interface ClientCredentialsInterface {
 
-    void authenticate(String clientCode, String password);
+    void authenticate(ClientCredentials clientCredentials);
 
 }
