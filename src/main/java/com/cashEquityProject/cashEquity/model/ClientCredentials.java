@@ -7,4 +7,8 @@ public class ClientCredentials {
     public String getClientCode() {
         return clientCode;
     }
+
+    public String getPassword() {
+        return password;
+    }
 }
