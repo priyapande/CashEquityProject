@@ -16,14 +16,7 @@ public class MyController implements config {
 
     @RequestMapping(value="/login")
     public Integer login(@RequestBody ClientCredentials clientCredentials) {
-        try {
-            authentication.authenticate(clientCredentials);
-        }
-        catch (Exception e) {
-            return config.FAILED;
-        }
-
-        return config.SUCCESS;
+        return authentication.authenticate(clientCredentials);
     }
 
 
