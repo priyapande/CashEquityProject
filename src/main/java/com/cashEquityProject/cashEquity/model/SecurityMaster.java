@@ -1,15 +1,15 @@
 package com.cashEquityProject.cashEquity.model;
 
 public class SecurityMaster {
-    public String company_name;
-    public String sector;
+    private String companyName;
+    private String sector;
 
-    public String getCompany_name() {
-        return company_name;
+    public String getCompanyName() {
+        return companyName;
     }
 
-    public void setCompany_name(String company_name) {
-        this.company_name = company_name;
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
     }
 
     public String getSector() {
@@ -36,25 +36,25 @@ public class SecurityMaster {
         this.isin = isin;
     }
 
-    public Integer getMarket_lot() {
-        return market_lot;
+    public Integer getMarketLot() {
+        return marketLot;
     }
 
-    public void setMarket_lot(Integer market_lot) {
-        this.market_lot = market_lot;
+    public void setMarketLot(Integer marketLot) {
+        this.marketLot = marketLot;
     }
 
-    public Integer getPrice_variance_limit() {
-        return price_variance_limit;
+    public Integer getPriceVarianceLimit() {
+        return priceVarianceLimit;
     }
 
-    public void setPrice_variance_limit(Integer price_variance_limit) {
-        this.price_variance_limit = price_variance_limit;
+    public void setPriceVarianceLimit(Integer priceVarianceLimit) {
+        this.priceVarianceLimit = priceVarianceLimit;
     }
 
-    public String symbol;
-    public String isin;
-    public Integer market_lot;
-    public Integer price_variance_limit;
+    private String symbol;
+    private String isin;
+    private Integer marketLot;
+    private Integer priceVarianceLimit;
 
 }
