@@ -24,6 +24,7 @@ public class Authentication implements ClientCredentialsInterface, config {
         String clientcode = clientCredentials.getClientCode();
         String inpPassword = clientCredentials.getPassword();
 
+<<<<<<< HEAD
         System.out.println(clientcode + " " + inpPassword);
 
         try{
@@ -38,6 +39,14 @@ public class Authentication implements ClientCredentialsInterface, config {
             }
 
         } catch (EmptyResultDataAccessException exp) {
+=======
+        System.out.println(clientcode + inpPassword);
+        ClientCredentials selectedUser = jdbcTemplate.queryForObject(authQuery,
+                new Object[]{clientcode, inpPassword},
+                new BeanPropertyRowMapper<>(ClientCredentials.class));
+
+        if (selectedUser == null) {
+>>>>>>> 4a56302ef08e5fd6e95591370473f24ef7cb96a2
             return config.INVALID_USER;
         }
 

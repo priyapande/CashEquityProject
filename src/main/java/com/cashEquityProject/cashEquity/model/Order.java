@@ -1,7 +1,8 @@
 package com.cashEquityProject.cashEquity.model;
 
-public class Orders {
+public class Order {
 
+    private String orderId;
     private String clientName;
     private String security;
     private String date;
@@ -11,6 +12,14 @@ public class Orders {
     private Double limitPrice;
     private char direction;
     private Double value;
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
 
     public String getClientName() {
         return clientName;
@@ -86,8 +95,9 @@ public class Orders {
 
     @Override
     public String toString() {
-        return "Orders{" +
-                "clientName='" + clientName + '\'' +
+        return "Order{" +
+                "orderId='" + orderId + '\'' +
+                ", clientName='" + clientName + '\'' +
                 ", security='" + security + '\'' +
                 ", date='" + date + '\'' +
                 ", time='" + time + '\'' +
