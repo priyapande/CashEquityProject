@@ -3,12 +3,15 @@ package com.cashEquityProject.cashEquity.controller;
 import com.cashEquityProject.cashEquity.implementation.OrdersImplementation;
 import com.cashEquityProject.cashEquity.model.Order;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RestController
+@CrossOrigin(allowedHeaders =
+        {"Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"},
+        methods = {RequestMethod.POST, RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE}
+)
 public class OrderController {
 
     @Autowired
@@ -21,7 +24,7 @@ public class OrderController {
     }
 
     @RequestMapping(value="/displayOrders/{code}")
-    public List<Order> displayOrders(String code){
+    public List<Order> displayOrders(@PathVariable String code){
         return ordersImplementation.displayOrders(code);
     }
 

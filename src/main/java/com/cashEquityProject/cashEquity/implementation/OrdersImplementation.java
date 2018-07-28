@@ -32,18 +32,20 @@ public class OrdersImplementation implements OrdersInterface {
                         order.getTradeType(),
                         order.getLimitPrice(),
                         order.getDirection(),
-                        order.getValue()
+                        order.getValue(),
+                        order.getOrderId()
                 });
     }
 
     @Override
     public List<Order> displayOrders(String code){
 
-        String sql = "Select * from orders where clientName in (Select name from clientMaster where clientcode=?)";
+        System.out.println("CODE: " + code);
+        String sql = "select * from orders where orderid = (select orderid from clientorder where clientcode=?)";
 
-        List<Order> list = jdbcTemplate.query(sql,
-                new BeanPropertyRowMapper(Order.class));
-        return list;
+        return jdbcTemplate.query(sql,
+                new Object[]{code},
+                new BeanPropertyRowMapper<>(Order.class));
     }
 
     @Override
