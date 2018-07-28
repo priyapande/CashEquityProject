@@ -2,6 +2,7 @@ package com.cashEquityProject.cashEquity.controller;
 
 import com.cashEquityProject.cashEquity.model.Order;
 import com.cashEquityProject.cashEquity.implementation.OrdersImplementation;
+import com.cashEquityProject.cashEquity.model.Security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,5 +45,13 @@ public class OrderController {
         // TODO: Return proper JSON
         return "Data deleted successfully";
 
+    }
+
+    @RequestMapping(value="/getTopOrders/{symbol}")
+    public List<Security> getTopOrders(@PathVariable String symbol){
+
+        // Return top buy and sell orders for corresponding security symbol
+        // The list contains 10 elements, first 5 as the top 5 Buy orders and the rest 5 as the top 5 sell orders
+        return ordersImplementation.getTopOrders(symbol);
     }
 }
