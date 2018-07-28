@@ -1,6 +1,6 @@
 package com.cashEquityProject.cashEquity.model;
 
-public class ClientMaster {
+public class ClientInfo {
     private String name;
     private String code;
     private String country;

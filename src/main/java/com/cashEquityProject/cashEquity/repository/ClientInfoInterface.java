@@ -2,7 +2,7 @@ package com.cashEquityProject.cashEquity.repository;
 
 import org.json.JSONObject;
 
-public interface ClientMasterInterface {
+public interface ClientInfoInterface {
 
     JSONObject userInfo(String code);
 

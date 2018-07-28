@@ -1,10 +1,9 @@
 package com.cashEquityProject.cashEquity.controller;
 
 import com.cashEquityProject.cashEquity.implementation.Authentication;
-import com.cashEquityProject.cashEquity.implementation.ClientMasterImplementation;
+import com.cashEquityProject.cashEquity.implementation.ClientInfoImplementation;
 import com.cashEquityProject.cashEquity.model.ClientCredentials;
 import com.cashEquityProject.cashEquity.repository.config;
-import org.jboss.logging.Param;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +20,7 @@ public class MyController{
     Authentication authentication;
 
     @Autowired
-    ClientMasterImplementation clientMasterImplementation;
+    ClientInfoImplementation clientInfoImplementation;
 
     private Integer loginStatus;
 
@@ -51,7 +50,7 @@ public class MyController{
 
         if (response.equals(config.SUCCESS)) {
 
-            JSONObject user = clientMasterImplementation.userInfo(clientCredentials.getClientCode());
+            JSONObject user = clientInfoImplementation.userInfo(clientCredentials.getClientCode());
 
             jsonObject.put("code", user.get("code"));
             jsonObject.put("name", user.get("name"));
@@ -59,7 +58,6 @@ public class MyController{
         }
 
         return jsonObject.toString();
-
 
     }
 
