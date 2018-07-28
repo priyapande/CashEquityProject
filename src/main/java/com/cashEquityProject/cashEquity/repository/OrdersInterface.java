@@ -6,10 +6,13 @@ import java.util.List;
 
 public interface OrdersInterface {
 
+    // Add order based on Order object
     void addOrder(Order order);
 
-    List<Order> displayOrders(String code);
+    // Get orders based on client code
+    List<Order> getOrders(String code);
 
+    // Delete order based on order id
     void deleteOrder(String orderId);
 }
 
