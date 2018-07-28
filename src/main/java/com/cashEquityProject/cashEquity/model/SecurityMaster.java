@@ -3,6 +3,11 @@ package com.cashEquityProject.cashEquity.model;
 public class SecurityMaster {
     private String companyName;
     private String sector;
+    private String symbol;
+    private String isin;
+    private Integer marketLot;
+    private Integer priceVarianceLimit;
+    private Double price;
 
     public String getCompanyName() {
         return companyName;
@@ -52,9 +57,24 @@ public class SecurityMaster {
         this.priceVarianceLimit = priceVarianceLimit;
     }
 
-    private String symbol;
-    private String isin;
-    private Integer marketLot;
-    private Integer priceVarianceLimit;
+    public Double getPrice() {
+        return price;
+    }
 
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    @Override
+    public String toString() {
+        return "SecurityMaster{" +
+                "companyName='" + companyName + '\'' +
+                ", sector='" + sector + '\'' +
+                ", symbol='" + symbol + '\'' +
+                ", isin='" + isin + '\'' +
+                ", marketLot=" + marketLot +
+                ", priceVarianceLimit=" + priceVarianceLimit +
+                ", price=" + price +
+                '}';
+    }
 }

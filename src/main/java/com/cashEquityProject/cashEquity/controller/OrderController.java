@@ -2,6 +2,8 @@ package com.cashEquityProject.cashEquity.controller;
 
 import com.cashEquityProject.cashEquity.implementation.OrdersImplementation;
 import com.cashEquityProject.cashEquity.model.Order;
+import com.cashEquityProject.cashEquity.model.SecurityMaster;
+import com.cashEquityProject.cashEquity.model.SecurityModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +25,11 @@ public class OrderController {
     @RequestMapping(value="/displayOrders/{code}")
     public List<Order> displayOrders(String code){
         return ordersImplementation.displayOrders(code);
+    }
+
+    @RequestMapping(value = "/displaySecurity/{time}")
+    public SecurityMaster displaySecurity(String time) {
+        return ordersImplementation.displaySecurity(time);
     }
 
     @RequestMapping(value="/deleteOrder/{orderId}")

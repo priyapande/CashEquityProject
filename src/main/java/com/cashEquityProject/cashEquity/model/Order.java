@@ -12,6 +12,7 @@ public class Order {
     private Double limitPrice;
     private char direction;
     private Double value;
+    private int orderStatus;
 
     public String getOrderId() {
         return orderId;
@@ -93,6 +94,14 @@ public class Order {
         this.value = value;
     }
 
+    public int getOrderStatus() {
+        return orderStatus;
+    }
+
+    public void setOrderStatus(int orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+
     @Override
     public String toString() {
         return "Order{" +
@@ -106,6 +115,7 @@ public class Order {
                 ", limitPrice=" + limitPrice +
                 ", direction=" + direction +
                 ", value=" + value +
+                ", orderStatus=" + orderStatus +
                 '}';
     }
 }
