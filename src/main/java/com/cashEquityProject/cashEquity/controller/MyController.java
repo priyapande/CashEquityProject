@@ -67,7 +67,7 @@ public class MyController{
     public String getOrdersByClientCode(@PathVariable String code) {
 
 
-
+return "";
     }
 
 }
