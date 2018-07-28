@@ -23,9 +23,9 @@ public class OrderController {
         return "Data saved successfully";
     }
 
-    @RequestMapping(value="/displayOrders/{code}")
-    public List<Order> displayOrders(@PathVariable String code){
-        return ordersImplementation.displayOrders(code);
+    @RequestMapping(value="/getOrders/{code}")
+    public List<Order> getOrders(@PathVariable String code){
+        return ordersImplementation.getOrders(code);
     }
 
     @RequestMapping(value="/deleteOrder/{orderId}")
