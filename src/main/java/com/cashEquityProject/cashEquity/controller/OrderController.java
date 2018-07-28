@@ -22,8 +22,7 @@ public class OrderController {
 
     @RequestMapping(value="/displayOrders/{code}")
     public List<Order> displayOrders(String code){
-        List<Order> list = ordersImplementation.displayOrders(code);
-        return list;
+        return ordersImplementation.displayOrders(code);
     }
 
     @RequestMapping(value="/deleteOrder/{orderId}")

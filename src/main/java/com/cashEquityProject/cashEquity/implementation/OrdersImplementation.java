@@ -39,7 +39,7 @@ public class OrdersImplementation implements OrdersInterface {
     @Override
     public List<Order> displayOrders(String code){
 
-        String sql = "Select * from orders where clientName in (Select name from clientMaster where code=?)";
+        String sql = "Select * from orders where clientName in (Select name from clientMaster where clientcode=?)";
 
         List<Order> list = jdbcTemplate.query(sql,
                 new BeanPropertyRowMapper(Order.class));

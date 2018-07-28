@@ -6,14 +6,6 @@ public class ClientMaster {
     private String country;
     private double tradingLimitUSD, tradingLimitRS;
 
-    public ClientMaster(String name, String code, String country, double tradingLimitUSD, double tradingLimitRS) {
-        this.name = name;
-        this.code = code;
-        this.country = country;
-        this.tradingLimitUSD = tradingLimitUSD;
-        this.tradingLimitRS = tradingLimitRS;
-    }
-
     public String getName() {
         return name;
     }
