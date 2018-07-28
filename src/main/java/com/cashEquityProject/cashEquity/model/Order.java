@@ -2,16 +2,16 @@ package com.cashEquityProject.cashEquity.model;
 
 public class Order {
 
-    private String orderId;
-    private String clientName;
-    private String security;
-    private String date;
-    private String time;
-    private Integer quantity;
-    private String tradeType;
-    private Double limitPrice;
-    private char direction;
-    private Double value;
+    private String orderId;     // unique ID for the order
+    private String clientCode;  // Client code
+    private String security;    // Security Symbol of the order's security
+    private String date;        // Date of trade (format e.g. 21-JUL-2018)
+    private String time;        // Time of trade (format e.g. 09:30)
+    private Integer quantity;   // Quantity of shares.
+    private String tradeType;   // Type of trade (LIMIT or MARKET)
+    private Double limitPrice;  // Limit price (for LIMIT order) TODO: rename to just price? Maybe "limitPrice" term is for LIMIT ORDERS.
+    private Character direction;// Order direction : B(BUY) or S(SELL)
+    private Double value;       // Value of order = price x quantity
 
     public String getOrderId() {
         return orderId;
@@ -22,11 +22,11 @@ public class Order {
     }
 
     public String getClientName() {
-        return clientName;
+        return clientCode;
     }
 
-    public void setClientName(String clientName) {
-        this.clientName = clientName;
+    public void setClientName(String clientCode) {
+        this.clientCode = clientCode;
     }
 
     public String getSecurity() {
@@ -77,11 +77,11 @@ public class Order {
         this.limitPrice = limitPrice;
     }
 
-    public char getDirection() {
+    public Character getDirection() {
         return direction;
     }
 
-    public void setDirection(char direction) {
+    public void setDirection(Character direction) {
         this.direction = direction;
     }
 
@@ -97,7 +97,7 @@ public class Order {
     public String toString() {
         return "Order{" +
                 "orderId='" + orderId + '\'' +
-                ", clientName='" + clientName + '\'' +
+                ", clientName='" + clientCode + '\'' +
                 ", security='" + security + '\'' +
                 ", date='" + date + '\'' +
                 ", time='" + time + '\'' +
