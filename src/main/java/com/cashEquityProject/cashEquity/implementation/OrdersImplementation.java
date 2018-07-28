@@ -14,13 +14,24 @@ import java.util.List;
 
 @Repository
 public class OrdersImplementation implements OrdersInterface {
+
+    /*
+     * Repository class handling OrdersInterface.
+     * Implements functions to add, get and delete orders.
+     */
+
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
 
     @Override
     public void addOrder(Order order){
+        /*
+         * Add client order to MYSQL table using Order object.
+         * Args:
+         *  order : Order object.
+         */
 
-        String sql = "insert into order values(?,?,?,?,?,?,?,?,?)";
+        String sql = "insert into order (clientcode, security, tradedate, tradetime, quantity, tradetype, limitprice, direction, value) values(?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(sql,
                 new Object[]{
@@ -38,18 +49,27 @@ public class OrdersImplementation implements OrdersInterface {
     }
 
     @Override
-    public List<Order> displayOrders(String code){
+    public List<Order> getOrders(String code){
+        /*
+         * Get client orders from MYSQL table using client code.
+         * Args:
+         *  code : Client code.
+         */
 
-        System.out.println("CODE: " + code);
-        String sql = "select * from orders where orderid = (select orderid from clientorder where clientcode=?)";
+        String sql = "select * from orders where orderId = (select orderId from clientOrder where clientCode=?)";
 
         return jdbcTemplate.query(sql,
-                new Object[]{code},
-                new BeanPropertyRowMapper<>(Order.class));
+                                new Object[]{code},
+                                new BeanPropertyRowMapper<>(Order.class));
     }
 
     @Override
     public void deleteOrder(String orderId){
+        /*
+         * Delete client order from MYSQL table using order id.
+         * Args:
+         *  orderId : Order Id.
+         */
 
         String sql = "delete from orders where orderId=?";
 
