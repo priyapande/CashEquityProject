@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
         {"Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization"},
         methods = {RequestMethod.POST, RequestMethod.GET, RequestMethod.PUT, RequestMethod.DELETE}
 )
-public class MyController{
+public class AuthController {
 
     @Autowired
     Authentication authentication;
@@ -58,13 +58,6 @@ public class MyController{
         }
 
         return jsonObject.toString();
-
-    }
-
-    @PostMapping(value = "/ordersByClientCode/{code}")
-    public String getOrdersByClientCode(@PathVariable String code) {
-
-        return "";
 
     }
 
