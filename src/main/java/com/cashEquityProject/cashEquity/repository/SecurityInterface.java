@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface SecurityInterface {
 
-    List<Security> getAllSecurities(String time);
+    List<Security> getAllSecurities(String date, String time);
 
 }
