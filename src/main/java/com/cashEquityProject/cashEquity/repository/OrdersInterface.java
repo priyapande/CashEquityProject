@@ -1,6 +1,7 @@
 package com.cashEquityProject.cashEquity.repository;
 
 import com.cashEquityProject.cashEquity.model.Order;
+import com.cashEquityProject.cashEquity.model.SecurityMaster;
 
 import java.util.List;
 
@@ -14,5 +15,7 @@ public interface OrdersInterface {
 
     // Delete order based on order id
     void deleteOrder(String orderId);
+
+    public SecurityMaster displaySecurity(String time);
 }
 

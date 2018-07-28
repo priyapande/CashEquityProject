@@ -8,6 +8,7 @@ public class SecurityMaster {
     private String isin;
     private Integer marketLot;
     private Integer priceVarianceLimit;
+    private Double price;
 
     public String getCompanyName() {
         return companyName;
@@ -55,6 +56,27 @@ public class SecurityMaster {
 
     public void setPriceVarianceLimit(Integer priceVarianceLimit) {
         this.priceVarianceLimit = priceVarianceLimit;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    @Override
+    public String toString() {
+        return "SecurityMaster{" +
+                "companyName='" + companyName + '\'' +
+                ", sector='" + sector + '\'' +
+                ", symbol='" + symbol + '\'' +
+                ", isin='" + isin + '\'' +
+                ", marketLot=" + marketLot +
+                ", priceVarianceLimit=" + priceVarianceLimit +
+                ", price=" + price +
+                '}';
     }
 
 }

@@ -12,6 +12,7 @@ public class Order {
     private Double limitPrice;  // Limit price (for LIMIT order) TODO: rename to just price? Maybe "limitPrice" term is for LIMIT ORDERS.
     private Character direction;// Order direction : B(BUY) or S(SELL)
     private Double value;       // Value of order = price x quantity
+    private Integer orderStatus;// Status of the order TODO: Decide values of status
 
     public String getOrderId() {
         return orderId;
@@ -93,6 +94,14 @@ public class Order {
         this.value = value;
     }
 
+    public int getOrderStatus() {
+        return orderStatus;
+    }
+
+    public void setOrderStatus(int orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+
     @Override
     public String toString() {
         return "Order{" +
@@ -106,6 +115,7 @@ public class Order {
                 ", limitPrice=" + limitPrice +
                 ", direction=" + direction +
                 ", value=" + value +
+                ", orderStatus=" + orderStatus +
                 '}';
     }
 }

@@ -1,6 +1,7 @@
 package com.cashEquityProject.cashEquity.implementation;
 
 import com.cashEquityProject.cashEquity.model.Order;
+import com.cashEquityProject.cashEquity.model.SecurityMaster;
 import com.cashEquityProject.cashEquity.repository.OrdersInterface;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +62,28 @@ public class OrdersImplementation implements OrdersInterface {
         return jdbcTemplate.query(sql,
                                 new Object[]{code},
                                 new BeanPropertyRowMapper<>(Order.class));
+    }
+
+    @Override
+    public SecurityMaster displaySecurity(String time){
+
+        String sql = "Select * from securityMaster";
+
+        SecurityMaster securityMaster = jdbcTemplate.queryForObject(sql,
+                new Object[]{}, new BeanPropertyRowMapper<>(SecurityMaster.class) );
+
+        String [] timeSplit = time.split(":", 2);
+
+        String sql2 = "Select price from securityModel where isinNo = ? and hours = ? and time = ?";
+
+        Double price = jdbcTemplate.queryForObject(sql,new Object[]{
+                securityMaster.getIsin(),
+                timeSplit[0],
+                timeSplit[1]},
+                Double.class );
+
+        securityMaster.setPrice(price);
+        return securityMaster;
     }
 
     @Override
