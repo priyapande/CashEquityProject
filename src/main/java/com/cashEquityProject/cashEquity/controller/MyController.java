@@ -65,7 +65,9 @@ public class MyController{
 
     @PostMapping(value = "/ordersByClientCode/{code}")
     public String getOrdersByClientCode(@PathVariable String code) {
-            return null;
+
+        return "";
+
     }
 
 }
