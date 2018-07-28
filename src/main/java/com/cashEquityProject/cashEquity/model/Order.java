@@ -22,11 +22,11 @@ public class Order {
         this.orderId = orderId;
     }
 
-    public String getClientName() {
+    public String getClientCode() {
         return clientCode;
     }
 
-    public void setClientName(String clientCode) {
+    public void setClientCode(String clientCode) {
         this.clientCode = clientCode;
     }
 
@@ -104,8 +104,8 @@ public class Order {
 
     @Override
     public String toString() {
-        return "Order{" +
-                "orderId='" + orderId + '\'' +
+        return "Order {" +
+                "  orderId='" + orderId + '\'' +
                 ", clientName='" + clientCode + '\'' +
                 ", security='" + security + '\'' +
                 ", date='" + date + '\'' +
@@ -116,6 +116,6 @@ public class Order {
                 ", direction=" + direction +
                 ", value=" + value +
                 ", orderStatus=" + orderStatus +
-                '}';
+                "}";
     }
 }

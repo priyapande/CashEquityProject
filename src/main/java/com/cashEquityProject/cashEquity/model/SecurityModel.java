@@ -59,13 +59,13 @@ public class SecurityModel {
 
     @Override
     public String toString() {
-        return "SecurityModel{" +
-                "date='" + date + '\'' +
+        return "SecurityModel {" +
+                "  date='" + date + '\'' +
                 ", hours=" + hours +
                 ", minutes=" + minutes +
                 ", symbol='" + symbol + '\'' +
                 ", isinNo='" + isinNo + '\'' +
                 ", lastTradedPrice=" + lastTradedPrice +
-                '}';
+                "}";
     }
 }

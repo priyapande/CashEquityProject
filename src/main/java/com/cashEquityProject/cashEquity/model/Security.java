@@ -1,14 +1,14 @@
 package com.cashEquityProject.cashEquity.model;
 
-public class SecurityMaster {
+public class Security {
 
-    private String companyName;
-    private String sector;
-    private String symbol;
-    private String isin;
-    private Integer marketLot;
-    private Integer priceVarianceLimit;
-    private Double price;
+    private String companyName;         // Name of company
+    private String sector;              // Security sector
+    private String symbol;              // Symbol of security (primary key)
+    private String ISIN;                // ISIN number of security (unique for security)
+    private Integer marketLot;          // Minimum trading quantity (usually 1)
+    private Integer priceVarianceLimit; // Price Variant Limit
+    private Double price;               // Price of the security (time variant)
 
     public String getCompanyName() {
         return companyName;
@@ -34,12 +34,12 @@ public class SecurityMaster {
         this.symbol = symbol;
     }
 
-    public String getIsin() {
-        return isin;
+    public String getISIN() {
+        return ISIN;
     }
 
-    public void setIsin(String isin) {
-        this.isin = isin;
+    public void setISIN(String ISIN) {
+        this.ISIN = ISIN;
     }
 
     public Integer getMarketLot() {
@@ -68,15 +68,14 @@ public class SecurityMaster {
 
     @Override
     public String toString() {
-        return "SecurityMaster{" +
+        return "Security{" +
                 "companyName='" + companyName + '\'' +
                 ", sector='" + sector + '\'' +
                 ", symbol='" + symbol + '\'' +
-                ", isin='" + isin + '\'' +
+                ", ISIN='" + ISIN + '\'' +
                 ", marketLot=" + marketLot +
                 ", priceVarianceLimit=" + priceVarianceLimit +
                 ", price=" + price +
                 '}';
     }
-
 }

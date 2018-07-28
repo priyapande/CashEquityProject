@@ -1,7 +1,7 @@
 package com.cashEquityProject.cashEquity.implementation;
 
 import com.cashEquityProject.cashEquity.model.Order;
-import com.cashEquityProject.cashEquity.model.SecurityMaster;
+import com.cashEquityProject.cashEquity.model.Security;
 import com.cashEquityProject.cashEquity.repository.OrdersInterface;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +32,14 @@ public class OrdersImplementation implements OrdersInterface {
          *  order : Order object.
          */
 
-        String sql = "insert into order (clientcode, security, tradedate, tradetime, quantity, tradetype, limitprice, direction, value) values(?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        // Insert command (no orderId because it is auto incremented by MySQL)
+        String sql = "insert into orders" +
+                    " (clientcode, security, tradedate, tradetime, quantity, tradetype, limitprice, direction, value)" +
+                    " values(?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(sql,
                 new Object[]{
-                        order.getClientName(),
+                        order.getClientCode(),
                         order.getSecurity(),
                         order.getDate(),
                         order.getTime(),
@@ -44,9 +47,9 @@ public class OrdersImplementation implements OrdersInterface {
                         order.getTradeType(),
                         order.getLimitPrice(),
                         order.getDirection(),
-                        order.getValue(),
-                        order.getOrderId()
-                });
+                        order.getValue()
+                },
+                new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.VARCHAR, Types.FLOAT, Types.CHAR, Types.FLOAT});
     }
 
     @Override
@@ -65,28 +68,6 @@ public class OrdersImplementation implements OrdersInterface {
     }
 
     @Override
-    public SecurityMaster displaySecurity(String time){
-
-        String sql = "Select * from securityMaster";
-
-        SecurityMaster securityMaster = jdbcTemplate.queryForObject(sql,
-                new Object[]{}, new BeanPropertyRowMapper<>(SecurityMaster.class) );
-
-        String [] timeSplit = time.split(":", 2);
-
-        String sql2 = "Select price from securityModel where isinNo = ? and hours = ? and time = ?";
-
-        Double price = jdbcTemplate.queryForObject(sql,new Object[]{
-                securityMaster.getIsin(),
-                timeSplit[0],
-                timeSplit[1]},
-                Double.class );
-
-        securityMaster.setPrice(price);
-        return securityMaster;
-    }
-
-    @Override
     public void deleteOrder(String orderId){
         /*
          * Delete client order from MYSQL table using order id.
@@ -94,6 +75,7 @@ public class OrdersImplementation implements OrdersInterface {
          *  orderId : Order Id.
          */
 
+        // TODO: Do not actually delete the order (change the order status instead)
         String sql = "delete from orders where orderId=?";
 
         jdbcTemplate.update(sql,
