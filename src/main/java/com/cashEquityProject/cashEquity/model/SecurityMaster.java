@@ -1,8 +1,13 @@
 package com.cashEquityProject.cashEquity.model;
 
 public class SecurityMaster {
+
     private String companyName;
     private String sector;
+    private String symbol;
+    private String isin;
+    private Integer marketLot;
+    private Integer priceVarianceLimit;
 
     public String getCompanyName() {
         return companyName;
@@ -51,10 +56,5 @@ public class SecurityMaster {
     public void setPriceVarianceLimit(Integer priceVarianceLimit) {
         this.priceVarianceLimit = priceVarianceLimit;
     }
-
-    private String symbol;
-    private String isin;
-    private Integer marketLot;
-    private Integer priceVarianceLimit;
 
 }
