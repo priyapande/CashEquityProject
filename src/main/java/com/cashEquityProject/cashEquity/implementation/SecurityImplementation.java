@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.ArrayList;
 
 @Repository
 public class SecurityImplementation implements SecurityInterface {
@@ -16,37 +17,28 @@ public class SecurityImplementation implements SecurityInterface {
     private JdbcTemplate jdbcTemplate;
 
     @Override
-    public List<Security> getAllSecurities(String time){
+    public List<Security> getAllSecurities(String date, String time){
 
         Double price;
         List<Security> securities = jdbcTemplate.query("select * from securities",
                                                     new Object[]{},
-                                                    new BeanPropertyRowMapper<>(Security.class) );
+                                                    new BeanPropertyRowMapper<>(Security.class));
 
-        String[] timeSplit = time.split(":", 2);
 
-        String sql = "select price from securityModel where symbol = ? and hours = ? and time = ?";
-
+        List<String> symbols = new ArrayList<String>();
         for (Security security: securities) {
-
-            price = jdbcTemplate.queryForObject(sql,
-                                                new Object[] {
-                                                    security.getSymbol(),
-                                                    timeSplit[0],
-                                                    timeSplit[1]
-                                                },
-                                                Double.class);
-
-            security.setPrice(price);
-
+            symbols.add(security.getSymbol());
         }
-//        Double price = jdbcTemplate.queryForObject(sql,new Object[]{
-//                        security.getISIN(),
-//                        timeSplit[0],
-//                        timeSplit[1]},
-//                Double.class );
-//
-//        security.setPrice(price);
+
+        String sql = "select price from securityprice where symbol in ('" + String.join("','", symbols) + "') and date = ? and time = ?";
+        List<Double> prices = jdbcTemplate.query(sql,
+                                                new Object[]{date, time},
+                                                new BeanPropertyRowMapper<>(Double.class));
+
+        for (int i=0; i<prices.size(); i++) {
+            securities.get(i).setPrice(prices.get(i));
+        }
+
         return securities;
     }
 
