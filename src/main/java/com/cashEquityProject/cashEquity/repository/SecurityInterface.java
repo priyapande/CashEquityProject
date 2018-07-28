@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface SecurityInterface {
 
+    // Returns all securities (with price according to login time)
     List<Security> getAllSecurities(String time);
 
 }

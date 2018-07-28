@@ -15,5 +15,8 @@ public interface OrdersInterface {
 
     // Delete order based on order id
     void deleteOrder(String orderId);
+
+    // Returns top 5 sell and buy orders for a particular security
+    List<Security> getTopOrders(String symbol);
 }
 

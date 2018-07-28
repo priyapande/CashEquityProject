@@ -82,4 +82,29 @@ public class OrdersImplementation implements OrdersInterface {
                 new Object[]{orderId},
                 new int[]{Types.VARCHAR});
     }
+
+    @Override
+    public List<Security> getTopOrders(String symbol){
+        /*
+         * Get top buy and sell orders from MYSQL table using security symbol.
+         * Args:
+         *  code : security symbol.
+         */
+
+        // Top 5 Buy Orders
+        String sql1 = "select * from orders where symbol = ? and direction = ? order by value DESC limit 5";
+
+        List<Security> securityList = jdbcTemplate.query(sql1,
+                                         new Object[]{symbol, "B"},
+                                         new BeanPropertyRowMapper<>(Security.class));
+
+        // Top 5 Sell Orders
+        String sql2 = "select * from orders where symbol = ? and direction = ? order by value ASC limit 5";
+
+        securityList.addAll(jdbcTemplate.query(sql2,
+                            new Object[]{symbol, "S"},
+                            new BeanPropertyRowMapper<>(Security.class)));
+
+        return securityList;
+    }
 }
