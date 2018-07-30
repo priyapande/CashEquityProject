@@ -4,6 +4,7 @@ import com.cashEquityProject.cashEquity.model.Order;
 import com.cashEquityProject.cashEquity.model.Security;
 import com.cashEquityProject.cashEquity.repository.OrdersInterface;
 
+import com.cashEquityProject.cashEquity.repository.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -76,8 +77,22 @@ public class OrdersImplementation implements OrdersInterface {
          *  orderId : Order Id.
          */
 
-        // TODO: Do not actually delete the order (change the order status instead)
-        String sql = "update orders set orderstatus = 2 where orderId=?";
+        String sql = "update orders set orderstatus = " + config.EXECUTED  + " where orderId=?";
+
+        jdbcTemplate.update(sql,
+                new Object[]{orderId},
+                new int[]{Types.VARCHAR});
+    }
+
+    @Override
+    public void cancelOrder(String orderId){
+        /*
+         * For orders that have been cancelled by the client
+         * Args:
+         *  orderId : Order Id.
+         */
+
+        String sql = "update orders set orderstatus = " + config.ORDER_CANCELLED  + " where orderId=?";
 
         jdbcTemplate.update(sql,
                 new Object[]{orderId},

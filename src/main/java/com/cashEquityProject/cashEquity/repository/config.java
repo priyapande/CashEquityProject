@@ -16,6 +16,6 @@ public interface config {
     final public static Integer NOT_EXECUTED = 0;
     final public static Integer IN_PROGRESS = 1;
     final public static Integer EXECUTED = 2;
-
+    final public static Integer ORDER_CANCELLED = 3;
 
 }
