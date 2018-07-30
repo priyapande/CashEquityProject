@@ -1,6 +1,8 @@
 package com.cashEquityProject.cashEquity.model;
 
-public class Order {
+import java.util.Comparator;
+
+public class Order{
 
     private String orderId;     // unique ID for the order
     private String clientCode;  // Client code
@@ -122,4 +124,5 @@ public class Order {
                 ", orderStatus=" + orderStatus +
                 "}";
     }
+
 }
