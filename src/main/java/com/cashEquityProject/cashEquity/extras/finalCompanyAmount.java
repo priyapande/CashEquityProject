@@ -24,7 +24,7 @@ public class finalCompanyAmount {
                 new BeanPropertyRowMapper<>(Order.class));
         for(Order element : companyReceivable)
         {
-            receivable=receivable + element.getValue();
+            receivable=receivable + element.getLimitPrice()*(element.getQuantity()-element.getRemainingquantity());
         }
         return receivable;
     }
@@ -39,7 +39,7 @@ public class finalCompanyAmount {
                 new BeanPropertyRowMapper<>(Order.class));
         for(Order element : companyPayable)
         {
-            payable=payable + element.getValue();
+            payable=payable + element.getLimitPrice()*(element.getQuantity()-element.getRemainingquantity());
         }
         return payable;
     }

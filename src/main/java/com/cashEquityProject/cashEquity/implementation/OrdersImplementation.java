@@ -1,5 +1,6 @@
 package com.cashEquityProject.cashEquity.implementation;
 
+import com.cashEquityProject.cashEquity.extras.Netting;
 import com.cashEquityProject.cashEquity.model.Order;
 import com.cashEquityProject.cashEquity.model.Security;
 import com.cashEquityProject.cashEquity.repository.OrdersInterface;
@@ -38,11 +39,12 @@ public class OrdersImplementation implements OrdersInterface {
         String sqlUpdateCount;
 
         order.setOrderStatus(0);
+        order.setRemainingquantity(order.getQuantity());
 
         // Insert command (no orderId because it is auto incremented by MySQL)
         String sql = "insert into orders" +
-                    " (clientcode, symbol, tradedate, tradetime, quantity, tradetype, limitprice, direction, value, orderStatus)" +
-                    " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    " (clientcode, symbol, tradedate, tradetime, quantity, tradetype, limitprice, direction, value, orderStatus, remainingquantity,)" +
+                    " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
 
         System.out.println(order.toString());
 
@@ -57,7 +59,8 @@ public class OrdersImplementation implements OrdersInterface {
                         order.getLimitPrice(),
                         order.getDirection(),
                         order.getValue(),
-                        order.getOrderStatus()
+                        order.getOrderStatus(),
+                        order.getRemainingquantity()
                 },
                 new int[]{Types.VARCHAR,
                         Types.VARCHAR,
@@ -68,7 +71,9 @@ public class OrdersImplementation implements OrdersInterface {
                         Types.FLOAT,
                         Types.CHAR,
                         Types.FLOAT,
-                        Types.INTEGER});
+                        Types.INTEGER,
+                        Types.INTEGER
+        });
 
         if(order.getOrderStatus() == 'B')
             sqlUpdateCount = "update securities set buycount = buycount + 1 where symbol = ?";
@@ -78,6 +83,8 @@ public class OrdersImplementation implements OrdersInterface {
         jdbcTemplate.update(sqlUpdateCount,
                 new Object[]{order.getSymbol()},
                 new int[]{Types.VARCHAR});
+       new Thread(new Netting(order)).start();
+
     }
 
     @Override

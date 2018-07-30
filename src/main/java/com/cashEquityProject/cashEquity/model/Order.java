@@ -1,7 +1,5 @@
 package com.cashEquityProject.cashEquity.model;
 
-import java.util.Comparator;
-
 public class Order{
 
     private String orderId;     // unique ID for the order
@@ -15,6 +13,15 @@ public class Order{
     private Character direction;// Order direction : B(BUY) or S(SELL)
     private Double value;       // Value of order = price x quantity
     private Integer orderStatus;// Status of the order TODO: Decide values of status
+    private Integer remainingquantity; //Quantity of shares after netting and processing
+
+    public Integer getRemainingquantity() {
+        return remainingquantity;
+    }
+
+    public void setRemainingquantity(Integer remainingquantity) {
+        this.remainingquantity = remainingquantity;
+    }
 
     public String getOrderId() {
         return orderId;
@@ -110,9 +117,9 @@ public class Order{
 
     @Override
     public String toString() {
-        return "Order {" +
-                "  orderId='" + orderId + '\'' +
-                ", clientCode ='" + clientCode + '\'' +
+        return "Order{" +
+                "orderId='" + orderId + '\'' +
+                ", clientCode='" + clientCode + '\'' +
                 ", symbol='" + symbol + '\'' +
                 ", tradedate='" + tradedate + '\'' +
                 ", tradetime='" + tradetime + '\'' +
@@ -122,7 +129,7 @@ public class Order{
                 ", direction=" + direction +
                 ", value=" + value +
                 ", orderStatus=" + orderStatus +
-                "}";
+                ", remainingquantity=" + remainingquantity +
+                '}';
     }
-
 }

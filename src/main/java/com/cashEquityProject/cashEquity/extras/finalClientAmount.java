@@ -16,14 +16,14 @@ public class finalClientAmount {
 
     public Double clientNetPayable(String code) {
 
-        String sqlBuy = "select value from orders where direction='B' and code=?";
+        String sqlBuy = "select value from orders where direction='B' and clientCode=?";
 
         List<Order> clientPayable = jdbcTemplate.query(sqlBuy,
                 new Object[]{code},
                 new BeanPropertyRowMapper<>(Order.class));
         for(Order element : clientPayable)
         {
-            payable=payable + element.getValue();
+            payable=payable + element.getLimitPrice()*(element.getQuantity()-element.getRemainingquantity());
         }
         return payable;
     }
@@ -31,14 +31,14 @@ public class finalClientAmount {
     public Double clientNetReceivable(String symbol) {
 
 
-        String sqlSell = "select value from orders where direction='S' and code=?";
+        String sqlSell = "select value from orders where direction='S' and clientCode=?";
 
         List<Order> clientReceivable = jdbcTemplate.query(sqlSell,
                 new Object[]{symbol},
                 new BeanPropertyRowMapper<>(Order.class));
         for(Order element : clientReceivable)
         {
-            receivable=receivable + element.getValue();
+            receivable=receivable + element.getLimitPrice()*(element.getQuantity()-element.getRemainingquantity());
         }
         return receivable;
     }
