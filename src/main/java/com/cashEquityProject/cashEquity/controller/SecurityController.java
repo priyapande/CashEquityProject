@@ -22,4 +22,14 @@ public class SecurityController {
         return securityImplementation.getAllSecurities(date, time);
     }
 
+    @RequestMapping(value = "/getTopSecuritiesByPrice/")
+    public List<Security> getTopSecuritiesByPrice() {
+        return securityImplementation.getTopSecuritiesByPrice();
+    }
+
+    @RequestMapping(value = "/getTopSecuritiesByCount/")
+    public List<Security> getTopSecuritiesByCount() {
+        return securityImplementation.getTopSecuritiesByCount();
+    }
+
 }

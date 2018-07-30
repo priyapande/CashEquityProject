@@ -8,4 +8,7 @@ public interface SecurityInterface {
 
     List<Security> getAllSecurities(String date, String time);
 
+    List<Security> getTopSecuritiesByPrice();
+
+    List<Security> getTopSecuritiesByCount();
 }

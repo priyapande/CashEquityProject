@@ -1,5 +1,6 @@
 package com.cashEquityProject.cashEquity.implementation;
 
+import com.cashEquityProject.cashEquity.model.Order;
 import com.cashEquityProject.cashEquity.model.Security;
 import com.cashEquityProject.cashEquity.model.SecurityModel;
 import com.cashEquityProject.cashEquity.repository.SecurityInterface;
@@ -43,4 +44,49 @@ public class SecurityImplementation implements SecurityInterface {
         return securities;
     }
 
+    @Override
+    public List<Security> getTopSecuritiesByCount() {
+        /*
+         * Get top buy and sell securities from MYSQL table based on buy and sell count.
+         */
+
+        // Top 5 Buy Securities
+        String sql1 = "select * from securities order by buycount DESC limit 5";
+
+        List<Security> securityList = jdbcTemplate.query(sql1,
+                new Object[]{},
+                new BeanPropertyRowMapper<>(Security.class));
+
+        // Top 5 Sell Securities
+        String sql2 = "select * from securities order by sellcount DESC limit 5";
+
+        securityList.addAll(jdbcTemplate.query(sql2,
+                new Object[]{},
+                new BeanPropertyRowMapper<>(Security.class)));
+
+        return securityList;
+    }
+
+    @Override
+    public List<Security> getTopSecuritiesByPrice() {
+        /*
+         * Get top buy and sell securities from MYSQL table based on price.
+         */
+
+        // Top 5 Buy Securities
+        String sql1 = "select * from securities order by price DESC limit 5";
+
+        List<Security> securityList = jdbcTemplate.query(sql1,
+                new Object[]{},
+                new BeanPropertyRowMapper<>(Security.class));
+
+        // Top 5 Sell Securities
+        String sql2 = "select * from securities order by price ASC limit 5";
+
+        securityList.addAll(jdbcTemplate.query(sql2,
+                new Object[]{},
+                new BeanPropertyRowMapper<>(Security.class)));
+
+        return securityList;
+    }
 }
