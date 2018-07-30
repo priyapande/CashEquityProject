@@ -5,6 +5,8 @@ import com.cashEquityProject.cashEquity.model.Security;
 import com.cashEquityProject.cashEquity.repository.OrdersInterface;
 
 import com.cashEquityProject.cashEquity.repository.config;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -111,7 +113,7 @@ public class OrdersImplementation implements OrdersInterface {
     }
 
     @Override
-    public List<Order> getTopOrders(String symbol){
+    public JSONObject getTopOrders(String symbol){
         /*
          * Get top buy and sell orders from MYSQL table using security symbol.
          * Args:
@@ -120,6 +122,7 @@ public class OrdersImplementation implements OrdersInterface {
 
         // TODO: Date and time for selection of orders.
         // TODO: Consider pricevariancelimit
+
 
         // Top 5 Buy Orders
         String sql1 = "select * from orders where symbol = ? and direction = 'B' and orderstatus in (0, 1) order by limitprice DESC limit 5";
@@ -135,6 +138,24 @@ public class OrdersImplementation implements OrdersInterface {
                             new Object[]{symbol},
                             new BeanPropertyRowMapper<>(Order.class)));
 
-        return securityList;
+        JSONArray buyArray = new JSONArray();
+        for (int i=0; i<5; i++) {
+            JSONObject buyObject = new JSONObject();
+            buyObject.put("price", securityList.get(i).getValue());
+            buyArray.put(buyObject);
+        }
+
+        JSONArray sellArray = new JSONArray();
+        for (int i=0; i<5; i++) {
+            JSONObject sellObject = new JSONObject();
+            sellObject.put("price", securityList.get(i).getValue());
+            buyArray.put(sellObject);
+        }
+
+        JSONObject result = new JSONObject();
+        result.put("buy", buyArray);
+        result.put("sell", sellArray);
+
+        return result;
     }
 }

@@ -2,6 +2,7 @@ package com.cashEquityProject.cashEquity.repository;
 
 import com.cashEquityProject.cashEquity.model.Order;
 import com.cashEquityProject.cashEquity.model.Security;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -20,6 +21,6 @@ public interface OrdersInterface {
     void cancelOrder(String orderId);
 
     // Returns top 5 sell and buy orders for a particular security
-    List<Order> getTopOrders(String symbol);
+    JSONObject getTopOrders(String symbol);
 }
 
