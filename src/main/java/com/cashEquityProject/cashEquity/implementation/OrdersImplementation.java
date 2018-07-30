@@ -77,7 +77,7 @@ public class OrdersImplementation implements OrdersInterface {
          */
 
         // TODO: Do not actually delete the order (change the order status instead)
-        String sql = "delete from orders where orderId=?";
+        String sql = "update orders set orderstatus = 2 where orderId=?";
 
         jdbcTemplate.update(sql,
                 new Object[]{orderId},
