@@ -63,6 +63,16 @@ public class OrderController {
 
     }
 
+    @RequestMapping(value="/cancelOrder/{orderId}")
+    public String cancelOrder(@PathVariable String orderId){
+
+        // Change status of order using orderId
+        ordersImplementation.cancelOrder(orderId);
+
+        jsonObject.put("status", config.SUCCESS);
+        return jsonObject.toString();
+    }
+
     @RequestMapping(value="/getTopOrders/{symbol}")
     public List<Security> getTopOrders(@PathVariable String symbol){
 
