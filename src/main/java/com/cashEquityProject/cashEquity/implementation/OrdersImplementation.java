@@ -5,6 +5,8 @@ import com.cashEquityProject.cashEquity.model.Security;
 import com.cashEquityProject.cashEquity.repository.OrdersInterface;
 
 import com.cashEquityProject.cashEquity.repository.config;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -33,9 +35,11 @@ public class OrdersImplementation implements OrdersInterface {
          *  order : Order object.
          */
 
+        String sqlUpdateCount;
+
         // Insert command (no orderId because it is auto incremented by MySQL)
         String sql = "insert into orders" +
-                    " (clientcode, security, tradedate, tradetime, quantity, tradetype, limitprice, direction, value, orderstatus)" +
+                    " (clientcode, symbol, tradedate, tradetime, quantity, tradetype, limitprice, direction, value, orderstatus)" +
                     " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(sql,
@@ -52,6 +56,15 @@ public class OrdersImplementation implements OrdersInterface {
                         order.getOrderStatus()
                 },
                 new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.VARCHAR, Types.FLOAT, Types.CHAR, Types.FLOAT, Types.INTEGER});
+
+        if(order.getOrderStatus() == 'B')
+            sqlUpdateCount = "update orders set buycount = buycount + 1 where orderid = ?";
+        else
+            sqlUpdateCount = "update orders set sellcount = sellcount + 1 where orderid = ?";
+
+        jdbcTemplate.update(sqlUpdateCount,
+                new Object[]{order.getOrderId()},
+                new int[]{Types.VARCHAR});
     }
 
     @Override
@@ -100,7 +113,7 @@ public class OrdersImplementation implements OrdersInterface {
     }
 
     @Override
-    public List<Order> getTopOrders(String symbol){
+    public JSONObject getTopOrders(String symbol){
         /*
          * Get top buy and sell orders from MYSQL table using security symbol.
          * Args:
@@ -109,6 +122,7 @@ public class OrdersImplementation implements OrdersInterface {
 
         // TODO: Date and time for selection of orders.
         // TODO: Consider pricevariancelimit
+
 
         // Top 5 Buy Orders
         String sql1 = "select * from orders where symbol = ? and direction = 'B' and orderstatus in (0, 1) order by limitprice DESC limit 5";
@@ -124,6 +138,24 @@ public class OrdersImplementation implements OrdersInterface {
                             new Object[]{symbol},
                             new BeanPropertyRowMapper<>(Order.class)));
 
-        return securityList;
+        JSONArray buyArray = new JSONArray();
+        for (int i=0; i<2; i++) {
+            JSONObject buyObject = new JSONObject();
+            buyObject.put("price", securityList.get(i).getValue());
+            buyArray.put(buyObject);
+        }
+
+        JSONArray sellArray = new JSONArray();
+        for (int i=5; i<2; i++) {
+            JSONObject sellObject = new JSONObject();
+            sellObject.put("price", securityList.get(i).getValue());
+            buyArray.put(sellObject);
+        }
+
+        JSONObject result = new JSONObject();
+        result.put("buy", buyArray);
+        result.put("sell", sellArray);
+
+        return result;
     }
 }
