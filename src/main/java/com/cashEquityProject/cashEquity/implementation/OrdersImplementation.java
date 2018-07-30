@@ -33,6 +33,8 @@ public class OrdersImplementation implements OrdersInterface {
          *  order : Order object.
          */
 
+        String sqlUpdateCount;
+
         // Insert command (no orderId because it is auto incremented by MySQL)
         String sql = "insert into orders" +
                     " (clientcode, security, tradedate, tradetime, quantity, tradetype, limitprice, direction, value, orderstatus)" +
@@ -52,6 +54,15 @@ public class OrdersImplementation implements OrdersInterface {
                         order.getOrderStatus()
                 },
                 new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.VARCHAR, Types.FLOAT, Types.CHAR, Types.FLOAT, Types.INTEGER});
+
+        if(order.getOrderStatus() == 'B')
+            sqlUpdateCount = "update orders set buycount = buycount + 1 where orderid = ?";
+        else
+            sqlUpdateCount = "update orders set sellcount = sellcount + 1 where orderid = ?";
+
+        jdbcTemplate.update(sqlUpdateCount,
+                new Object[]{order.getOrderId()},
+                new int[]{Types.VARCHAR});
     }
 
     @Override
