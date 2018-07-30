@@ -139,14 +139,14 @@ public class OrdersImplementation implements OrdersInterface {
                             new BeanPropertyRowMapper<>(Order.class)));
 
         JSONArray buyArray = new JSONArray();
-        for (int i=0; i<5; i++) {
+        for (int i=0; i<2; i++) {
             JSONObject buyObject = new JSONObject();
             buyObject.put("price", securityList.get(i).getValue());
             buyArray.put(buyObject);
         }
 
         JSONArray sellArray = new JSONArray();
-        for (int i=0; i<5; i++) {
+        for (int i=5; i<2; i++) {
             JSONObject sellObject = new JSONObject();
             sellObject.put("price", securityList.get(i).getValue());
             buyArray.put(sellObject);
