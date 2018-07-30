@@ -4,9 +4,9 @@ public class Order {
 
     private String orderId;     // unique ID for the order
     private String clientCode;  // Client code
-    private String security;    // Security Symbol of the order's security
-    private String date;        // Date of trade (format e.g. 21-JUL-2018)
-    private String time;        // Time of trade (format e.g. 09:30)
+    private String symbol;    // Security Symbol of the order's security
+    private String tradedate;        // Date of trade (format e.g. 21-JUL-2018)
+    private String tradetime;        // Time of trade (format e.g. 09:30)
     private Integer quantity;   // Quantity of shares.
     private String tradeType;   // Type of trade (LIMIT or MARKET)
     private Double limitPrice;  // Limit price (for LIMIT order) TODO: rename to just price? Maybe "limitPrice" term is for LIMIT ORDERS.
@@ -30,28 +30,32 @@ public class Order {
         this.clientCode = clientCode;
     }
 
-    public String getSecurity() {
-        return security;
+    public String getSymbol() {
+        return symbol;
     }
 
-    public void setSecurity(String security) {
-        this.security = security;
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
     }
 
-    public String getDate() {
-        return date;
+    public String getTradedate() {
+        return tradedate;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setTradedate(String tradedate) {
+        this.tradedate = tradedate;
     }
 
-    public String getTime() {
-        return time;
+    public String getTradetime() {
+        return tradetime;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public void setTradetime(String tradetime) {
+        this.tradetime = tradetime;
+    }
+
+    public void setOrderStatus(Integer orderStatus) {
+        this.orderStatus = orderStatus;
     }
 
     public Integer getQuantity() {
@@ -107,9 +111,9 @@ public class Order {
         return "Order {" +
                 "  orderId='" + orderId + '\'' +
                 ", clientName='" + clientCode + '\'' +
-                ", security='" + security + '\'' +
-                ", date='" + date + '\'' +
-                ", time='" + time + '\'' +
+                ", symbol='" + symbol + '\'' +
+                ", tradedate='" + tradedate + '\'' +
+                ", tradetime='" + tradetime + '\'' +
                 ", quantity=" + quantity +
                 ", tradeType='" + tradeType + '\'' +
                 ", limitPrice=" + limitPrice +

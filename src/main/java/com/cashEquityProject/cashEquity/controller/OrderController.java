@@ -74,7 +74,7 @@ public class OrderController {
     }
 
     @RequestMapping(value="/getTopOrders/{symbol}")
-    public List<Security> getTopOrders(@PathVariable String symbol){
+    public List<Order> getTopOrders(@PathVariable String symbol){
 
         // Return top buy and sell orders for corresponding security symbol
         // The list contains 10 elements, first 5 as the top 5 Buy orders and the rest 5 as the top 5 sell orders

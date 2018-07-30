@@ -41,9 +41,9 @@ public class OrdersImplementation implements OrdersInterface {
         jdbcTemplate.update(sql,
                 new Object[]{
                         order.getClientCode(),
-                        order.getSecurity(),
-                        order.getDate(),
-                        order.getTime(),
+                        order.getSymbol(),
+                        order.getTradedate(),
+                        order.getTradetime(),
                         order.getQuantity(),
                         order.getTradeType(),
                         order.getLimitPrice(),
@@ -100,26 +100,29 @@ public class OrdersImplementation implements OrdersInterface {
     }
 
     @Override
-    public List<Security> getTopOrders(String symbol){
+    public List<Order> getTopOrders(String symbol){
         /*
          * Get top buy and sell orders from MYSQL table using security symbol.
          * Args:
          *  code : security symbol.
          */
 
-        // Top 5 Buy Orders
-        String sql1 = "select * from orders where symbol = ? and direction = ? order by value DESC limit 5";
+        // TODO: Date and time for selection of orders.
+        // TODO: Consider pricevariancelimit
 
-        List<Security> securityList = jdbcTemplate.query(sql1,
-                                         new Object[]{symbol, "B"},
-                                         new BeanPropertyRowMapper<>(Security.class));
+        // Top 5 Buy Orders
+        String sql1 = "select * from orders where symbol = ? and direction = 'B' and orderstatus in (0, 1) order by limitprice DESC limit 5";
+
+        List<Order> securityList = jdbcTemplate.query(sql1,
+                                         new Object[]{symbol},
+                                         new BeanPropertyRowMapper<>(Order.class));
 
         // Top 5 Sell Orders
-        String sql2 = "select * from orders where symbol = ? and direction = ? order by value ASC limit 5";
+        String sql2 = "select * from orders where symbol = ? and direction = 'S' and orderstatus in (0, 1) order by limitprice ASC limit 5";
 
         securityList.addAll(jdbcTemplate.query(sql2,
-                            new Object[]{symbol, "S"},
-                            new BeanPropertyRowMapper<>(Security.class)));
+                            new Object[]{symbol},
+                            new BeanPropertyRowMapper<>(Order.class)));
 
         return securityList;
     }

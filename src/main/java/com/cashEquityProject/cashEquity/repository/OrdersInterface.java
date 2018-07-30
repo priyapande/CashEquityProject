@@ -20,6 +20,6 @@ public interface OrdersInterface {
     void cancelOrder(String orderId);
 
     // Returns top 5 sell and buy orders for a particular security
-    List<Security> getTopOrders(String symbol);
+    List<Order> getTopOrders(String symbol);
 }
 
