@@ -29,7 +29,6 @@ public class Netting implements Runnable{
         this.direction=direction;
         this.symbol=symbol;
         this.order=order;
-
     }
 
     @Override
@@ -49,7 +48,6 @@ public class Netting implements Runnable{
 
 
        //BUYORDER
-        Order buyListRefined=null;
         for(Order pastOrderBuy: buyNetList) {
            if (pastOrderBuy.getOrderStatus()!=2 && pastOrderBuy.getQuantity() > order.getQuantity())
            {
@@ -66,7 +64,6 @@ public class Netting implements Runnable{
        }
 
        //SELLORDER
-        Order sellListRefined=null;
         for(Order pastOrdersell: sellNetList) {
             if (pastOrdersell.getOrderStatus()!=2 && pastOrdersell.getQuantity() > order.getQuantity())
             {
