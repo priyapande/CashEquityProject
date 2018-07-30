@@ -34,8 +34,8 @@ public class OrdersImplementation implements OrdersInterface {
 
         // Insert command (no orderId because it is auto incremented by MySQL)
         String sql = "insert into orders" +
-                    " (clientcode, security, tradedate, tradetime, quantity, tradetype, limitprice, direction, value)" +
-                    " values(?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    " (clientcode, security, tradedate, tradetime, quantity, tradetype, limitprice, direction, value, orderstatus)" +
+                    " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(sql,
                 new Object[]{
@@ -47,9 +47,10 @@ public class OrdersImplementation implements OrdersInterface {
                         order.getTradeType(),
                         order.getLimitPrice(),
                         order.getDirection(),
-                        order.getValue()
+                        order.getValue(),
+                        order.getOrderStatus()
                 },
-                new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.VARCHAR, Types.FLOAT, Types.CHAR, Types.FLOAT});
+                new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.VARCHAR, Types.FLOAT, Types.CHAR, Types.FLOAT, Types.INTEGER});
     }
 
     @Override
@@ -60,7 +61,7 @@ public class OrdersImplementation implements OrdersInterface {
          *  code : Client code.
          */
 
-        String sql = "select * from orders where orderId = (select orderId from clientOrders where clientCode=?)";
+        String sql = "select * from orders where orderid = (select orderid from clientorders where clientCode=?)";
 
         return jdbcTemplate.query(sql,
                                 new Object[]{code},

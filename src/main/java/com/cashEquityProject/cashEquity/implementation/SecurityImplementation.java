@@ -29,21 +29,14 @@ public class SecurityImplementation implements SecurityInterface {
         List<String> symbols = new ArrayList<String>();
         for (Security security: securities) {
             symbols.add(security.getSymbol());
-            System.out.println(security.getSymbol());
         }
-
-        System.out.println("Before sql query");
 
         String sql = "select * from securityprice where symbol in ('" + String.join("','", symbols) + "') and date = ? and time = ?";
         List<SecurityModel> prices = jdbcTemplate.query(sql,
                                                 new Object[]{date, time},
                                                 new BeanPropertyRowMapper<>(SecurityModel.class));
-        System.out.println("After sql query");
-        System.out.println(sql);
-        System.out.println(date + " " + time);
-        System.out.println(prices.size() + "");
+
         for (int i=0; i<prices.size(); i++) {
-            System.out.println("Price : " + prices.get(i).getPrice());
             securities.get(i).setPrice(prices.get(i).getPrice());
         }
 
