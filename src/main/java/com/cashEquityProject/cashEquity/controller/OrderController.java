@@ -3,6 +3,8 @@ package com.cashEquityProject.cashEquity.controller;
 import com.cashEquityProject.cashEquity.model.Order;
 import com.cashEquityProject.cashEquity.implementation.OrdersImplementation;
 import com.cashEquityProject.cashEquity.model.Security;
+import com.cashEquityProject.cashEquity.repository.config;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,16 +17,28 @@ import java.util.List;
 )
 public class OrderController {
 
+    JSONObject jsonObject = new JSONObject();
+
     @Autowired
     OrdersImplementation ordersImplementation;
 
     @RequestMapping(value="/addOrder")
     public String addOrder(@RequestBody Order order){
 
-        ordersImplementation.addOrder(order);
+        try {
+            ordersImplementation.addOrder(order);
 
-        // TODO: Return proper JSON
-        return "Data saved successfully";
+            // TODO: Return proper JSON
+            //return "Data saved successfully";
+            jsonObject.put("status", config.SUCCESS);
+            return jsonObject.toString();
+        }
+        catch (Exception e)
+        {
+            jsonObject.put("status", config.FAILED);
+            return jsonObject.toString();
+
+        }
 
     }
 
@@ -43,7 +57,9 @@ public class OrderController {
         ordersImplementation.deleteOrder(orderId);
 
         // TODO: Return proper JSON
-        return "Data deleted successfully";
+        //return "Data deleted successfully";
+        jsonObject.put("status", config.SUCCESS);
+        return jsonObject.toString();
 
     }
 
