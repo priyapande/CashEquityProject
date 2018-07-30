@@ -126,7 +126,7 @@ public class OrdersImplementation implements OrdersInterface {
     }
 
     @Override
-    public JSONObject getTopOrders(String symbol){
+    public String getTopOrders(String symbol){
         /*
          * Get top buy and sell orders from MYSQL table using security symbol.
          * Args:
@@ -166,10 +166,10 @@ public class OrdersImplementation implements OrdersInterface {
             sellArray.put(sellObject);
         }
 
-        JSONObject result = new JSONObject();
-        result.put("buy", buyArray);
-        result.put("sell", sellArray);
+        JSONArray result = new JSONArray();
+        result.put(buyArray);
+        result.put(sellArray);
 
-        return result;
+        return result.toString();
     }
 }

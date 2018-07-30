@@ -21,6 +21,6 @@ public interface OrdersInterface {
     void cancelOrder(String orderId);
 
     // Returns top 5 sell and buy orders for a particular security
-    JSONObject getTopOrders(String symbol);
+    String getTopOrders(String symbol);
 }
 

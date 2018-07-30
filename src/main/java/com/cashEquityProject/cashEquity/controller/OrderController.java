@@ -80,6 +80,6 @@ public class OrderController {
 
         // Return top buy and sell orders for corresponding security symbol
         // The list contains 10 elements, first 5 as the top 5 Buy orders and the rest 5 as the top 5 sell orders
-        return ordersImplementation.getTopOrders(symbol).toString();
+        return ordersImplementation.getTopOrders(symbol);
     }
 }
