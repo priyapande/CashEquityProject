@@ -61,7 +61,7 @@ public class OrdersImplementation implements OrdersInterface {
          *  code : Client code.
          */
 
-        String sql = "select * from orders where orderid = (select orderid from clientorders where clientCode=?)";
+        String sql = "select * from orders where clientCode = ?";
 
         return jdbcTemplate.query(sql,
                                 new Object[]{code},
