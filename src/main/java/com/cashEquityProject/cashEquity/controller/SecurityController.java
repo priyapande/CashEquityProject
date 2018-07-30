@@ -3,10 +3,7 @@ package com.cashEquityProject.cashEquity.controller;
 import com.cashEquityProject.cashEquity.implementation.SecurityImplementation;
 import com.cashEquityProject.cashEquity.model.Security;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,7 +18,7 @@ public class SecurityController {
     SecurityImplementation securityImplementation;
 
     @RequestMapping(value = "/getAllSecurities/{date}/{time}")
-    public List<Security> getAllSecurities(String date, String time) {
+    public List<Security> getAllSecurities(@PathVariable String date, @PathVariable String time) {
         return securityImplementation.getAllSecurities(date, time);
     }
 

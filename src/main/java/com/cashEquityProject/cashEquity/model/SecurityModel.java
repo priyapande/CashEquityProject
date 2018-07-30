@@ -5,7 +5,7 @@ public class SecurityModel {
     private String date;
     private String time;
     private String symbol;
-    private Double lastTradedPrice;
+    private Double price;
 
     public String getDate() {
         return date;
@@ -31,12 +31,12 @@ public class SecurityModel {
         this.symbol = symbol;
     }
 
-    public Double getLastTradedPrice() {
-        return lastTradedPrice;
+    public Double getPrice() {
+        return price;
     }
 
-    public void setLastTradedPrice(Double lastTradedPrice) {
-        this.lastTradedPrice = lastTradedPrice;
+    public void setPrice(Double price) {
+        this.price = price;
     }
 
     @Override
@@ -45,7 +45,7 @@ public class SecurityModel {
                 "date='" + date + '\'' +
                 ", time='" + time + '\'' +
                 ", symbol='" + symbol + '\'' +
-                ", lastTradedPrice=" + lastTradedPrice +
+                ", price=" + price +
                 '}';
     }
 }

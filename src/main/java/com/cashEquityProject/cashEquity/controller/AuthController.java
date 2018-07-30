@@ -22,19 +22,15 @@ public class AuthController {
     @Autowired
     ClientInfoImplementation clientInfoImplementation;
 
-    private Integer loginStatus;
-
     @PostMapping(value = "/login")
     public String login(@RequestBody ClientCredentials clientCredentials) {
         Integer response = authentication.authenticate(clientCredentials);
-
-        loginStatus = response;
 
         JSONObject jsonObject = new JSONObject();
 
         String msg = "";
         if (response.equals(config.SUCCESS)) {
-            msg = "Login succesfull";
+            msg = "Login successful";
         } else if (response.equals(config.INVALID_USER)) {
             msg = "Invalid User";
         } else if (response.equals(config.INVALID_PASSWORD)) {

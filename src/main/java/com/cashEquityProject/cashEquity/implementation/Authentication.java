@@ -1,5 +1,6 @@
 package com.cashEquityProject.cashEquity.implementation;
 
+import com.cashEquityProject.cashEquity.exceptions.InvalidUserException;
 import com.cashEquityProject.cashEquity.model.ClientCredentials;
 import com.cashEquityProject.cashEquity.repository.ClientCredentialsInterface;
 import com.cashEquityProject.cashEquity.repository.config;
@@ -10,6 +11,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,24 +32,29 @@ public class Authentication implements ClientCredentialsInterface, config {
 
         try{
 
-            ClientCredentials selectedUser = jdbcTemplate.queryForObject(authQuery,
+            List<ClientCredentials> selectedUsers = jdbcTemplate.query(authQuery,
                     new Object[]{clientcode},
                     new BeanPropertyRowMapper<>(ClientCredentials.class));
 
-            if (selectedUser.getPassword().equals(inpPassword)){
-                return config.SUCCESS;
-            } else {
-                return config.INVALID_PASSWORD;
+            System.out.println(selectedUsers.size() + "");
+
+            if (selectedUsers.size() == 1) {
+                ClientCredentials selectedUser = selectedUsers.get(0);
+
+                if (selectedUser.getPassword().equals(inpPassword)){
+                    return config.SUCCESS;
+                } else {
+                    return config.INVALID_PASSWORD;
+                }
             }
 
         } catch (EmptyResultDataAccessException exp) {
 
             return config.INVALID_USER;
 
-        } catch (Exception exp) {
-            System.out.println("Server problem");
-            return 10000;
         }
+
+        return config.FAILED;
 
     }
 }
