@@ -35,7 +35,7 @@ public class OrdersImplementation implements OrdersInterface {
 
         // Insert command (no orderId because it is auto incremented by MySQL)
         String sql = "insert into orders" +
-                    " (clientcode, security, tradedate, tradetime, quantity, tradetype, limitprice, direction, value, orderstatus)" +
+                    " (clientcode, symbol, tradedate, tradetime, quantity, tradetype, limitprice, direction, value, orderstatus)" +
                     " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(sql,
