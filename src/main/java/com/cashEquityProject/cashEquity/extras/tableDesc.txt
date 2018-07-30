@@ -1,0 +1,63 @@
+mysql> describe clientInfo;
++-----------------+-------------+------+-----+---------+-------+
+| Field           | Type        | Null | Key | Default | Extra |
++-----------------+-------------+------+-----+---------+-------+
+| clientcode      | varchar(5)  | NO   | PRI | NULL    |       |
+| name            | varchar(20) | NO   |     | NULL    |       |
+| country         | varchar(15) | NO   |     | NULL    |       |
+| tradinglimitusd | int(11)     | NO   |     | NULL    |       |
+| tradinglimitrs  | int(11)     | NO   |     | NULL    |       |
++-----------------+-------------+------+-----+---------+-------+
+5 rows in set (0.02 sec)
+
+mysql> describe credentials;
++------------+-------------+------+-----+---------+-------+
+| Field      | Type        | Null | Key | Default | Extra |
++------------+-------------+------+-----+---------+-------+
+| clientcode | varchar(5)  | YES  | MUL | NULL    |       |
+| password   | varchar(15) | NO   |     | NULL    |       |
++------------+-------------+------+-----+---------+-------+
+2 rows in set (0.00 sec)
+
+mysql> describe orders;
++-------------+-------------+------+-----+---------+----------------+
+| Field       | Type        | Null | Key | Default | Extra          |
++-------------+-------------+------+-----+---------+----------------+
+| orderid     | int(7)      | NO   | PRI | NULL    | auto_increment |
+| clientcode  | varchar(5)  | NO   | MUL | NULL    |                |
+| symbol      | varchar(20) | YES  | MUL | NULL    |                |
+| tradedate   | varchar(11) | YES  |     | NULL    |                |
+| tradetime   | varchar(6)  | YES  |     | NULL    |                |
+| quantity    | int(5)      | YES  |     | NULL    |                |
+| tradetype   | varchar(10) | YES  |     | NULL    |                |
+| limitprice  | float(6,2)  | YES  |     | NULL    |                |
+| direction   | char(1)     | YES  |     | NULL    |                |
+| value       | float(11,2) | YES  |     | NULL    |                |
+| orderstatus | int(3)      | NO   |     | NULL    |                |
++-------------+-------------+------+-----+---------+----------------+
+11 rows in set (0.00 sec)
+
+mysql> describe securities;
++--------------------+-------------+------+-----+---------+-------+
+| Field              | Type        | Null | Key | Default | Extra |
++--------------------+-------------+------+-----+---------+-------+
+| symbol             | varchar(20) | NO   | PRI | NULL    |       |
+| companyname        | varchar(60) | NO   |     | NULL    |       |
+| sector             | varchar(20) | NO   |     | NULL    |       |
+| ISIN               | varchar(13) | NO   | UNI | NULL    |       |
+| marketlot          | int(5)      | YES  |     | NULL    |       |
+| pricevariancelimit | int(5)      | YES  |     | NULL    |       |
+| price              | float(5,2)  | YES  |     | NULL    |       |
++--------------------+-------------+------+-----+---------+-------+
+7 rows in set (0.00 sec)
+
+mysql> describe securityprice;
++--------+-------------+------+-----+---------+-------+
+| Field  | Type        | Null | Key | Default | Extra |
++--------+-------------+------+-----+---------+-------+
+| symbol | varchar(20) | YES  | MUL | NULL    |       |
+| date   | varchar(11) | YES  |     | NULL    |       |
+| time   | varchar(6)  | YES  |     | NULL    |       |
+| price  | float(11,2) | YES  |     | NULL    |       |
++--------+-------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
