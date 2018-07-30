@@ -1,16 +1,16 @@
 package com.cashEquityProject.cashEquity.implementation;
 
-import com.cashEquityProject.cashEquity.model.Order;
 import com.cashEquityProject.cashEquity.model.Security;
 import com.cashEquityProject.cashEquity.model.SecurityModel;
 import com.cashEquityProject.cashEquity.repository.SecurityInterface;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 
 @Repository
 public class SecurityImplementation implements SecurityInterface {
@@ -26,8 +26,9 @@ public class SecurityImplementation implements SecurityInterface {
                                                     new Object[]{},
                                                     new BeanPropertyRowMapper<>(Security.class));
 
-
+        // List of security symbols.
         List<String> symbols = new ArrayList<String>();
+
         for (Security security: securities) {
             symbols.add(security.getSymbol());
         }
@@ -45,7 +46,7 @@ public class SecurityImplementation implements SecurityInterface {
     }
 
     @Override
-    public List<Security> getTopSecuritiesByCount() {
+    public List<Security> getTopSecuritiesByCount(String date, String time) {
         /*
          * Get top buy and sell securities from MYSQL table based on buy and sell count.
          */
@@ -68,25 +69,76 @@ public class SecurityImplementation implements SecurityInterface {
     }
 
     @Override
-    public List<Security> getTopSecuritiesByPrice() {
+    public String getTopSecuritiesByPrice(String date, String time) {
         /*
          * Get top buy and sell securities from MYSQL table based on price.
          */
 
-        // Top 5 Buy Securities
-        String sql1 = "select * from securities order by price DESC limit 5";
+        String[] currentTimeFields = time.split(":");
+        Integer currHour = Integer.parseInt(currentTimeFields[0]);
+        Integer currMin = Integer.parseInt(currentTimeFields[1]);
 
-        List<Security> securityList = jdbcTemplate.query(sql1,
-                new Object[]{},
-                new BeanPropertyRowMapper<>(Security.class));
+        String query = "select * from securityprice where date = ?";
 
-        // Top 5 Sell Securities
-        String sql2 = "select * from securities order by price ASC limit 5";
+        JSONArray result = new JSONArray();
 
-        securityList.addAll(jdbcTemplate.query(sql2,
-                new Object[]{},
-                new BeanPropertyRowMapper<>(Security.class)));
+        List<SecurityModel> securities = jdbcTemplate.query(query,
+                new Object[]{date},
+                new BeanPropertyRowMapper<>(SecurityModel.class));
 
-        return securityList;
+        Integer hour, minute;
+
+        // Filter securities based on time
+        Iterator<SecurityModel> iterator = securities.iterator();
+        while (iterator.hasNext()) {
+
+            String[] timeFields = iterator.next().getTime().split(":");
+            hour = Integer.parseInt(timeFields[0]);
+            minute = Integer.parseInt(timeFields[1]);
+
+            if (!((currHour > hour) || ((currHour.equals(hour) && currMin > minute)))) {
+                iterator.remove();
+            }
+
+        }
+
+        securities.sort(new Comparator<SecurityModel>() {
+            @Override
+            public int compare(SecurityModel o1, SecurityModel o2) {
+                return o1.getPrice().compareTo(o2.getPrice());
+            }
+        });
+
+        Integer len = securities.size();
+
+        List<SecurityModel> buyList = securities.subList(len-5, len);
+        List<SecurityModel> sellList = securities.subList(0, 5);
+
+        JSONArray buyJSON = new JSONArray();
+        for (SecurityModel x: buyList) {
+
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("symbol", x.getSymbol());
+            jsonObject.put("price", x.getPrice());
+
+            buyJSON.put(jsonObject);
+        }
+
+        result.put(buyJSON);
+
+        JSONArray sellJSON = new JSONArray();
+        for (SecurityModel x: sellList) {
+
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("symbol", x.getSymbol());
+            jsonObject.put("price", x.getPrice());
+
+            sellJSON.put(jsonObject);
+
+        }
+
+        result.put(sellJSON);
+
+        return result.toString(4);
     }
 }

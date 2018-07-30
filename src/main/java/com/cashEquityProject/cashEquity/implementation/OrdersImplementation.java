@@ -43,10 +43,8 @@ public class OrdersImplementation implements OrdersInterface {
 
         // Insert command (no orderId because it is auto incremented by MySQL)
         String sql = "insert into orders" +
-                    " (clientcode, symbol, tradedate, tradetime, quantity, tradetype, limitprice, direction, value, orderStatus, remainingquantity,)" +
-                    " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
-
-        System.out.println(order.toString());
+                    " (clientcode, symbol, tradedate, tradetime, quantity, tradetype, limitprice, direction, value, orderStatus, remainingquantity)" +
+                    " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(sql,
                 new Object[]{
@@ -75,15 +73,25 @@ public class OrdersImplementation implements OrdersInterface {
                         Types.INTEGER
         });
 
-        if(order.getOrderStatus() == 'B')
+        if(order.getDirection().equals('B')) {
             sqlUpdateCount = "update securities set buycount = buycount + 1 where symbol = ?";
-        else
+        } else {
             sqlUpdateCount = "update securities set sellcount = sellcount + 1 where symbol = ?";
+        }
 
         jdbcTemplate.update(sqlUpdateCount,
-                new Object[]{order.getSymbol()},
-                new int[]{Types.VARCHAR});
-       new Thread(new Netting(order)).start();
+                            new Object[]{order.getSymbol()},
+                            new int[]{Types.VARCHAR});
+
+        Integer orderid = (Integer) jdbcTemplate.queryForObject("select MAX(orderid) from orders",
+                                        new Object[]{},
+                                        Integer.class);
+
+        order.setOrderId(orderid);
+
+        System.out.println(order.toString());
+
+//        new Thread(new Netting(order)).start();
 
     }
 
@@ -162,14 +170,14 @@ public class OrdersImplementation implements OrdersInterface {
         JSONArray buyArray = new JSONArray();
         for (int i=0; i<5; i++) {
             JSONObject buyObject = new JSONObject();
-            buyObject.put("price", securityList.get(i).getValue());
+            buyObject.put("price", securityList.get(i).getLimitPrice());
             buyArray.put(buyObject);
         }
 
         JSONArray sellArray = new JSONArray();
         for (int i=5; i<10; i++) {
             JSONObject sellObject = new JSONObject();
-            sellObject.put("price", securityList.get(i).getValue());
+            sellObject.put("price", securityList.get(i).getLimitPrice());
             sellArray.put(sellObject);
         }
 

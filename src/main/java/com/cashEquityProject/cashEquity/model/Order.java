@@ -2,7 +2,7 @@ package com.cashEquityProject.cashEquity.model;
 
 public class Order{
 
-    private String orderId;     // unique ID for the order
+    private Integer orderId;     // unique ID for the order
     private String clientCode;  // Client code
     private String symbol;    // Security Symbol of the order's security
     private String tradedate;        // Date of trade (format e.g. 21-JUL-2018)
@@ -23,11 +23,11 @@ public class Order{
         this.remainingquantity = remainingquantity;
     }
 
-    public String getOrderId() {
+    public Integer getOrderId() {
         return orderId;
     }
 
-    public void setOrderId(String orderId) {
+    public void setOrderId(Integer orderId) {
         this.orderId = orderId;
     }
 

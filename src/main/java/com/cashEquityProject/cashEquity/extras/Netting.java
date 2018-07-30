@@ -14,22 +14,18 @@ public class Netting implements Runnable{
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    //private char direction;
-    //private String symbol;
     private Order order;
 
-    public Netting() {
-
-    }
+    public Netting() {}
 
     public Netting(Order order) {
-        //this.direction = direction;
-        //this.symbol = symbol;
         this.order = order;
     }
 
     @Override
     public void run() {
+
+        System.out.println(order.toString());
 
         String sqlBuy = "select * from orders where orderstatus in (0,1) and direction='S' and symbol=? and orderid!=? order by limitprice DESC, tradetime ASC";
         String sqlSell = "select * from orders where orderstatus in (0,1) and direction='B' and symbol=? and orderid!=? order by limitprice ASC, tradetime ASC";
@@ -42,7 +38,7 @@ public class Netting implements Runnable{
                 new Object[]{order.getSymbol(), order.getOrderId()},
                 new BeanPropertyRowMapper<>(Order.class));
 
-        //BUYORDER
+        // BUY ORDER
         for(Order pastOrderBuy: buyNetList) {
            if (pastOrderBuy.getOrderStatus()!=2 && pastOrderBuy.getQuantity() > order.getQuantity()) {
                order.setOrderStatus(2);
@@ -58,7 +54,7 @@ public class Netting implements Runnable{
            }
        }
 
-        //SELLORDER
+        // SELL ORDER
         for(Order pastOrdersell: sellNetList) {
             if (pastOrdersell.getOrderStatus()!=2 && pastOrdersell.getQuantity() > order.getQuantity()) {
                 order.setOrderStatus(2);

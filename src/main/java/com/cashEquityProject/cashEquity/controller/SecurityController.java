@@ -22,14 +22,14 @@ public class SecurityController {
         return securityImplementation.getAllSecurities(date, time);
     }
 
-    @RequestMapping(value = "/getTopSecuritiesByPrice/")
-    public List<Security> getTopSecuritiesByPrice() {
-        return securityImplementation.getTopSecuritiesByPrice();
+    @RequestMapping(value = "/getTopSecuritiesByPrice/{date}/{time}")
+    public String getTopSecuritiesByPrice(@PathVariable String date, @PathVariable String time) {
+        return securityImplementation.getTopSecuritiesByPrice(date, time);
     }
 
-    @RequestMapping(value = "/getTopSecuritiesByCount/")
-    public List<Security> getTopSecuritiesByCount() {
-        return securityImplementation.getTopSecuritiesByCount();
+    @RequestMapping(value = "/getTopSecuritiesByCount/{date}/{time}")
+    public List<Security> getTopSecuritiesByCount(@PathVariable String date, @PathVariable String time) {
+        return securityImplementation.getTopSecuritiesByCount(date, time);
     }
 
 }
