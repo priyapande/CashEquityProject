@@ -26,20 +26,21 @@ public class OrderController {
     @RequestMapping(value="/addOrder")
     public String addOrder(@RequestBody Order order){
 
-        try {
+//        try {
             ordersImplementation.addOrder(order);
 
             // TODO: Return proper JSON
             //return "Data saved successfully";
             jsonObject.put("status", config.SUCCESS);
             return jsonObject.toString();
-        }
-        catch (Exception e)
-        {
-            jsonObject.put("status", config.FAILED);
-            return jsonObject.toString();
-
-        }
+//        }
+//        catch (Exception e)
+//        {
+//            System.out.println(e.toString());
+//            jsonObject.put("status", config.FAILED);
+//            return jsonObject.toString();
+//
+//        }
 
     }
 
@@ -75,10 +76,10 @@ public class OrderController {
     }
 
     @RequestMapping(value="/getTopOrders/{symbol}")
-    public JSONObject getTopOrders(@PathVariable String symbol){
+    public String getTopOrders(@PathVariable String symbol){
 
         // Return top buy and sell orders for corresponding security symbol
         // The list contains 10 elements, first 5 as the top 5 Buy orders and the rest 5 as the top 5 sell orders
-        return ordersImplementation.getTopOrders(symbol);
+        return ordersImplementation.getTopOrders(symbol).toString();
     }
 }

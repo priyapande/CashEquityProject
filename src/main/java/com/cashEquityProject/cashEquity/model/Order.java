@@ -112,7 +112,7 @@ public class Order{
     public String toString() {
         return "Order {" +
                 "  orderId='" + orderId + '\'' +
-                ", clientName='" + clientCode + '\'' +
+                ", clientCode ='" + clientCode + '\'' +
                 ", symbol='" + symbol + '\'' +
                 ", tradedate='" + tradedate + '\'' +
                 ", tradetime='" + tradetime + '\'' +

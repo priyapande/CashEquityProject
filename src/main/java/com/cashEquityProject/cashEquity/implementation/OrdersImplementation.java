@@ -37,10 +37,14 @@ public class OrdersImplementation implements OrdersInterface {
 
         String sqlUpdateCount;
 
+        order.setOrderStatus(0);
+
         // Insert command (no orderId because it is auto incremented by MySQL)
         String sql = "insert into orders" +
-                    " (clientcode, symbol, tradedate, tradetime, quantity, tradetype, limitprice, direction, value, orderstatus)" +
+                    " (clientcode, symbol, tradedate, tradetime, quantity, tradetype, limitprice, direction, value, orderStatus)" +
                     " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        System.out.println(order.toString());
 
         jdbcTemplate.update(sql,
                 new Object[]{
@@ -55,15 +59,24 @@ public class OrdersImplementation implements OrdersInterface {
                         order.getValue(),
                         order.getOrderStatus()
                 },
-                new int[]{Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.INTEGER, Types.VARCHAR, Types.FLOAT, Types.CHAR, Types.FLOAT, Types.INTEGER});
+                new int[]{Types.VARCHAR,
+                        Types.VARCHAR,
+                        Types.VARCHAR,
+                        Types.VARCHAR,
+                        Types.INTEGER,
+                        Types.VARCHAR,
+                        Types.FLOAT,
+                        Types.CHAR,
+                        Types.FLOAT,
+                        Types.INTEGER});
 
         if(order.getOrderStatus() == 'B')
-            sqlUpdateCount = "update orders set buycount = buycount + 1 where orderid = ?";
+            sqlUpdateCount = "update securities set buycount = buycount + 1 where symbol = ?";
         else
-            sqlUpdateCount = "update orders set sellcount = sellcount + 1 where orderid = ?";
+            sqlUpdateCount = "update securities set sellcount = sellcount + 1 where symbol = ?";
 
         jdbcTemplate.update(sqlUpdateCount,
-                new Object[]{order.getOrderId()},
+                new Object[]{order.getSymbol()},
                 new int[]{Types.VARCHAR});
     }
 
@@ -120,6 +133,7 @@ public class OrdersImplementation implements OrdersInterface {
          *  code : security symbol.
          */
 
+
         // TODO: Date and time for selection of orders.
         // TODO: Consider pricevariancelimit
 
@@ -139,17 +153,17 @@ public class OrdersImplementation implements OrdersInterface {
                             new BeanPropertyRowMapper<>(Order.class)));
 
         JSONArray buyArray = new JSONArray();
-        for (int i=0; i<2; i++) {
+        for (int i=0; i<5; i++) {
             JSONObject buyObject = new JSONObject();
             buyObject.put("price", securityList.get(i).getValue());
             buyArray.put(buyObject);
         }
 
         JSONArray sellArray = new JSONArray();
-        for (int i=5; i<2; i++) {
+        for (int i=5; i<10; i++) {
             JSONObject sellObject = new JSONObject();
             sellObject.put("price", securityList.get(i).getValue());
-            buyArray.put(sellObject);
+            sellArray.put(sellObject);
         }
 
         JSONObject result = new JSONObject();
