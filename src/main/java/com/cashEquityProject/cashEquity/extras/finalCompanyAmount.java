@@ -22,8 +22,8 @@ public class finalCompanyAmount {
         List<Order> companyReceivable = jdbcTemplate.query(sqlBuy,
                 new Object[]{symbol},
                 new BeanPropertyRowMapper<>(Order.class));
-        for(Order element : companyReceivable)
-        {
+
+        for(Order element : companyReceivable) {
             receivable=receivable + element.getLimitPrice()*(element.getQuantity()-element.getRemainingquantity());
         }
         return receivable;
@@ -37,8 +37,8 @@ public class finalCompanyAmount {
         List<Order> companyPayable = jdbcTemplate.query(sqlSell,
                 new Object[]{symbol},
                 new BeanPropertyRowMapper<>(Order.class));
-        for(Order element : companyPayable)
-        {
+
+        for(Order element : companyPayable) {
             payable=payable + element.getLimitPrice()*(element.getQuantity()-element.getRemainingquantity());
         }
         return payable;
