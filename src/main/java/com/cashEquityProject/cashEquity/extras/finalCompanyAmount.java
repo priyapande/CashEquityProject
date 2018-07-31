@@ -7,56 +7,61 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.List;
 
-class pckCompany
-{
-    public double payablePck;
-    public int remainingQuantityPck;
-    public double receivablePck;
-}
-
 public class finalCompanyAmount {
 
     @Autowired
     JdbcTemplate jdbcTemplate;
 
-    public double receivable=0;
-    public double payable=0;
-    public int remainingQuantity=0;
+    private double receivable;
+    private double payable;
+    private int processedQuantity;
 
-    public pckCompany companyNetReceivable(String symbol) {
+    public finalCompanyAmount() {
+        this.receivable = 0;
+        this.payable = 0;
+        this.processedQuantity = 0;
+    }
+
+    public Report companyNetReceivable(String symbol) {
 
         String sqlBuy = "select value from orders where direction='B' and symbol=?";
 
-        pckCompany objSell=new pckCompany();
+        Report objSell=new Report();
         List<Order> companyReceivable = jdbcTemplate.query(sqlBuy,
                 new Object[]{symbol},
                 new BeanPropertyRowMapper<>(Order.class));
 
+        receivable = processedQuantity = 0;
         for(Order element : companyReceivable) {
-            receivable=receivable + element.getLimitPrice()*(element.getQuantity()-element.getRemainingquantity());
-            remainingQuantity=remainingQuantity+element.getQuantity()-element.getRemainingquantity();
+            receivable += element.getLimitPrice()*(element.getQuantity()-element.getRemainingquantity());
+            processedQuantity += element.getQuantity()-element.getRemainingquantity();
         }
-        objSell.receivablePck=receivable;
-        objSell.remainingQuantityPck=remainingQuantity;
+
+        objSell.setReceivable(receivable);
+        objSell.setProcessedQuantity(processedQuantity);
+
         return objSell;
     }
 
-    public pckCompany companyNetPayableable(String symbol) {
+    public Report companyNetPayableable(String symbol) {
 
 
         String sqlSell = "select value from orders where direction='S' and symbol=?";
 
-        pckCompany objBuy=new pckCompany();
+        Report objBuy = new Report();
         List<Order> companyPayable = jdbcTemplate.query(sqlSell,
                 new Object[]{symbol},
                 new BeanPropertyRowMapper<>(Order.class));
 
+        payable = processedQuantity = 0;
         for(Order element : companyPayable) {
-            payable=payable + element.getLimitPrice()*(element.getQuantity()-element.getRemainingquantity());
-            remainingQuantity=remainingQuantity+element.getQuantity()-element.getRemainingquantity();
+            payable += element.getLimitPrice()*(element.getQuantity()-element.getRemainingquantity());
+            processedQuantity += element.getQuantity()-element.getRemainingquantity();
         }
-        objBuy.payablePck=payable;
-        objBuy.remainingQuantityPck=remainingQuantity;
+
+        objBuy.setPayable(payable);
+        objBuy.setProcessedQuantity(processedQuantity);
+
         return objBuy;
     }
 }

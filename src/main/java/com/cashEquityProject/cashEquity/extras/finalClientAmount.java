@@ -7,56 +7,57 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.List;
 
-class pckClient
-{
-    public double payablePck;
-    public int remainingQuantityPck;
-    public double receivablePck;
-}
-
 public class finalClientAmount {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
+    private double receivable;
+    private double payable;
+    private int processedQuantity;
 
-    public double receivable=0;
-    public double payable=0;
-    public int remainingQuantity=0;
+    public finalClientAmount() {
+        this.receivable = 0;
+        this.payable = 0;
+        this.processedQuantity = 0;
+    }
 
-    public pckClient clientNetPayable(String code) {
+    public Report clientNetPayable(String code) {
 
         String sqlBuy = "select value from orders where direction='B' and clientCode=?";
 
-        pckClient objBuy=new pckClient();
+        Report objBuy = new Report();
         List<Order> clientPayable = jdbcTemplate.query(sqlBuy,
                 new Object[]{code},
                 new BeanPropertyRowMapper<>(Order.class));
         for(Order element : clientPayable)
         {
-            payable=payable + element.getLimitPrice()*(element.getQuantity()-element.getRemainingquantity());
-            remainingQuantity=remainingQuantity+element.getQuantity()-element.getRemainingquantity();
+            payable += element.getLimitPrice()*(element.getQuantity()-element.getRemainingquantity());
+            processedQuantity += element.getQuantity()-element.getRemainingquantity();
         }
-        objBuy.payablePck=payable;
-        objBuy.remainingQuantityPck=remainingQuantity;
+
+        objBuy.setPayable(payable);
+        objBuy.setProcessedQuantity(processedQuantity);
         return objBuy;
     }
 
-    public pckClient clientNetReceivable(String symbol) {
+    public Report clientNetReceivable(String symbol) {
 
 
         String sqlSell = "select value from orders where direction='S' and clientCode=?";
 
-        pck objSell=new pck();
+        Report objSell=new Report();
         List<Order> clientReceivable = jdbcTemplate.query(sqlSell,
                 new Object[]{symbol},
                 new BeanPropertyRowMapper<>(Order.class));
         for(Order element : clientReceivable)
         {
-            receivable=receivable + element.getLimitPrice()*(element.getQuantity()-element.getRemainingquantity());
-            remainingQuantity=remainingQuantity+element.getQuantity()-element.getRemainingquantity();
+            receivable += element.getLimitPrice()*(element.getQuantity()-element.getRemainingquantity());
+            processedQuantity += element.getQuantity()-element.getRemainingquantity();
         }
-        objSell.receivablePck=receivable;
-        objSell.remainingQuantityPck=remainingQuantity;
+
+        objSell.setReceivable(receivable);
+        objSell.setProcessedQuantity(processedQuantity);
+
         return objSell;
     }
 }
