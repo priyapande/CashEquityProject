@@ -2,6 +2,7 @@ package com.cashEquityProject.cashEquity.implementation;
 
 import com.cashEquityProject.cashEquity.model.Security;
 import com.cashEquityProject.cashEquity.model.SecurityModel;
+import com.cashEquityProject.cashEquity.model.TopSecuritiesCount;
 import com.cashEquityProject.cashEquity.repository.SecurityInterface;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -46,7 +47,7 @@ public class SecurityImplementation implements SecurityInterface {
     }
 
     @Override
-    public String getTopSecuritiesByCount(String date, String time) {
+    public String getTopSecuritiesByCount() {
         /*
          * Get top buy and sell securities from MYSQL table based on buy and sell count.
          */
@@ -54,25 +55,25 @@ public class SecurityImplementation implements SecurityInterface {
         JSONArray result = new JSONArray();
 
         // Top 5 Buy Securities
-        String sql1 = "select * from securities order by buycount DESC limit 5";
+        String buyQuery = "select symbol, buycount as count from securities order by buycount desc limit 5";
 
-        List<Security> buyList = jdbcTemplate.query(sql1,
-                new Object[]{},
-                new BeanPropertyRowMapper<>(Security.class));
+        List<TopSecuritiesCount> buyList = jdbcTemplate.query(buyQuery,
+                                                    new Object[]{},
+                                                    new BeanPropertyRowMapper<>(TopSecuritiesCount.class));
 
         // Top 5 Sell Securities
-        String sql2 = "select * from securities order by sellcount DESC limit 5";
+        String sellQuery = "select symbol, sellcount as count from securities order by sellcount desc limit 5";
 
-        List<Security> sellList = jdbcTemplate.query(sql2,
+        List<TopSecuritiesCount> sellList = jdbcTemplate.query(sellQuery,
                 new Object[]{},
-                new BeanPropertyRowMapper<>(Security.class));
+                new BeanPropertyRowMapper<>(TopSecuritiesCount.class));
 
         JSONArray buyJSON = new JSONArray();
-        for (Security x: buyList) {
+        for (TopSecuritiesCount x: buyList) {
 
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("symbol", x.getSymbol());
-            jsonObject.put("price", x.getPrice());
+            jsonObject.put("buycount", x.getCount());
 
             buyJSON.put(jsonObject);
         }
@@ -80,10 +81,10 @@ public class SecurityImplementation implements SecurityInterface {
         result.put(buyJSON);
 
         JSONArray sellJSON = new JSONArray();
-        for (Security x: sellList) {
+        for (TopSecuritiesCount x: sellList) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("symbol", x.getSymbol());
-            jsonObject.put("price", x.getPrice());
+            jsonObject.put("sellcount", x.getCount());
 
             sellJSON.put(jsonObject);
 
@@ -134,9 +135,15 @@ public class SecurityImplementation implements SecurityInterface {
         });
 
         Integer len = securities.size();
+        List<SecurityModel> buyList, sellList;
 
-        List<SecurityModel> sellList = securities.subList(0, 5);
-        List<SecurityModel> buyList = securities.subList(len-5, len);
+        if (len >= 5) {
+            sellList = securities.subList(0, 5);
+            buyList = securities.subList(len-5, len);
+        } else {
+            sellList = buyList = securities;
+        }
+
 
         JSONArray buyJSON = new JSONArray();
         for (SecurityModel x: buyList) {
