@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.List;
 
-class pck
+class pckClient
 {
     public double payablePck;
     public int remainingQuantityPck;
@@ -23,11 +23,11 @@ public class finalClientAmount {
     public double payable=0;
     public int remainingQuantity=0;
 
-    public pck clientNetPayable(String code) {
+    public pckClient clientNetPayable(String code) {
 
         String sqlBuy = "select value from orders where direction='B' and clientCode=?";
 
-        pck objBuy=new pck();
+        pckClient objBuy=new pckClient();
         List<Order> clientPayable = jdbcTemplate.query(sqlBuy,
                 new Object[]{code},
                 new BeanPropertyRowMapper<>(Order.class));
@@ -41,12 +41,12 @@ public class finalClientAmount {
         return objBuy;
     }
 
-    public pck clientNetReceivable(String symbol) {
+    public pckClient clientNetReceivable(String symbol) {
 
 
         String sqlSell = "select value from orders where direction='S' and clientCode=?";
 
-        pck objSell=new pck();
+        pckClient objSell=new pckClient();
         List<Order> clientReceivable = jdbcTemplate.query(sqlSell,
                 new Object[]{symbol},
                 new BeanPropertyRowMapper<>(Order.class));
