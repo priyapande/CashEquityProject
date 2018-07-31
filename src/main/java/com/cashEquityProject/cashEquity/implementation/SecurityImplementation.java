@@ -111,8 +111,8 @@ public class SecurityImplementation implements SecurityInterface {
 
         Integer len = securities.size();
 
-        List<SecurityModel> buyList = securities.subList(len-5, len);
         List<SecurityModel> sellList = securities.subList(0, 5);
+        List<SecurityModel> buyList = securities.subList(len-5, len);
 
         JSONArray buyJSON = new JSONArray();
         for (SecurityModel x: buyList) {

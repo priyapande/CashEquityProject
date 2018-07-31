@@ -2,12 +2,11 @@ package com.cashEquityProject.cashEquity.implementation;
 
 import com.cashEquityProject.cashEquity.extras.Netting;
 import com.cashEquityProject.cashEquity.model.Order;
-import com.cashEquityProject.cashEquity.model.Security;
 import com.cashEquityProject.cashEquity.repository.OrdersInterface;
 
-import com.cashEquityProject.cashEquity.repository.config;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import com.cashEquityProject.cashEquity.repository.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -15,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.Types;
 import java.util.List;
+import java.util.logging.Logger;
 
 
 @Repository
@@ -28,6 +28,8 @@ public class OrdersImplementation implements OrdersInterface {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    private static final Logger logger = Logger.getLogger(OrdersImplementation.class.getName());
+
     @Override
     public void addOrder(Order order){
         /*
@@ -38,12 +40,14 @@ public class OrdersImplementation implements OrdersInterface {
 
         String sqlUpdateCount;
 
+        // Default order status is 0 i.e. un-executed order
         order.setOrderStatus(0);
         order.setRemainingquantity(order.getQuantity());
 
         // Insert command (no orderId because it is auto incremented by MySQL)
         String sql = "insert into orders" +
-                    " (clientcode, symbol, tradedate, tradetime, quantity, tradetype, limitprice, direction, value, orderStatus, remainingquantity)" +
+                    " (clientcode, symbol, tradedate, tradetime, quantity, tradetype, limitprice, direction, value," +
+                    " orderStatus, remainingquantity)" +
                     " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(sql,
@@ -60,23 +64,26 @@ public class OrdersImplementation implements OrdersInterface {
                         order.getOrderStatus(),
                         order.getRemainingquantity()
                 },
-                new int[]{Types.VARCHAR,
-                        Types.VARCHAR,
-                        Types.VARCHAR,
-                        Types.VARCHAR,
-                        Types.INTEGER,
-                        Types.VARCHAR,
-                        Types.FLOAT,
-                        Types.CHAR,
-                        Types.FLOAT,
-                        Types.INTEGER,
-                        Types.INTEGER
+                new int[]{Types.VARCHAR, // client code
+                        Types.VARCHAR,   // security symbol
+                        Types.VARCHAR,   // trade date
+                        Types.VARCHAR,   // trade time
+                        Types.INTEGER,   // quantity
+                        Types.VARCHAR,   // trade type
+                        Types.FLOAT,     // limit price
+                        Types.CHAR,      // direction
+                        Types.FLOAT,     // value
+                        Types.INTEGER,   // order status
+                        Types.INTEGER    // remaining quantity
         });
 
         if(order.getDirection().equals('B')) {
             sqlUpdateCount = "update securities set buycount = buycount + 1 where symbol = ?";
-        } else {
+        } else if (order.getDirection().equals('S')) {
             sqlUpdateCount = "update securities set sellcount = sellcount + 1 where symbol = ?";
+        } else {
+            sqlUpdateCount = "";
+            logger.severe("Order direction was neither B nor S.");
         }
 
         jdbcTemplate.update(sqlUpdateCount,
@@ -91,7 +98,8 @@ public class OrdersImplementation implements OrdersInterface {
 
         System.out.println(order.toString());
 
-//        new Thread(new Netting(order)).start();
+        Netting netting = new Netting(order);
+        new Thread(netting).start();
 
     }
 
