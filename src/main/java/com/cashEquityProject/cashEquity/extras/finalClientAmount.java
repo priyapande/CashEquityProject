@@ -46,7 +46,7 @@ public class finalClientAmount {
 
         String sqlSell = "select value from orders where direction='S' and clientCode=?";
 
-        pckClient objSell=new pckClient();
+        pck objSell=new pck();
         List<Order> clientReceivable = jdbcTemplate.query(sqlSell,
                 new Object[]{symbol},
                 new BeanPropertyRowMapper<>(Order.class));
