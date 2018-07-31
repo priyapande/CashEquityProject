@@ -10,5 +10,5 @@ public interface SecurityInterface {
 
     String getTopSecuritiesByPrice(String date, String time);
 
-    List<Security> getTopSecuritiesByCount(String date, String time);
+    String getTopSecuritiesByCount(String date, String time);
 }
