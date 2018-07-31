@@ -28,7 +28,7 @@ public class SecurityController {
     }
 
     @RequestMapping(value = "/getTopSecuritiesByCount/{date}/{time}")
-    public List<Security> getTopSecuritiesByCount(@PathVariable String date, @PathVariable String time) {
+    public String getTopSecuritiesByCount(@PathVariable String date, @PathVariable String time) {
         return securityImplementation.getTopSecuritiesByCount(date, time);
     }
 

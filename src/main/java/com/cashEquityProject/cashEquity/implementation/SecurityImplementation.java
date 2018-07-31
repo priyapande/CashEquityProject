@@ -46,26 +46,51 @@ public class SecurityImplementation implements SecurityInterface {
     }
 
     @Override
-    public List<Security> getTopSecuritiesByCount(String date, String time) {
+    public String getTopSecuritiesByCount(String date, String time) {
         /*
          * Get top buy and sell securities from MYSQL table based on buy and sell count.
          */
 
+        JSONArray result = new JSONArray();
+
         // Top 5 Buy Securities
         String sql1 = "select * from securities order by buycount DESC limit 5";
 
-        List<Security> securityList = jdbcTemplate.query(sql1,
+        List<Security> buyList = jdbcTemplate.query(sql1,
                 new Object[]{},
                 new BeanPropertyRowMapper<>(Security.class));
 
         // Top 5 Sell Securities
         String sql2 = "select * from securities order by sellcount DESC limit 5";
 
-        securityList.addAll(jdbcTemplate.query(sql2,
+        List<Security> sellList = jdbcTemplate.query(sql2,
                 new Object[]{},
-                new BeanPropertyRowMapper<>(Security.class)));
+                new BeanPropertyRowMapper<>(Security.class));
 
-        return securityList;
+        JSONArray buyJSON = new JSONArray();
+        for (Security x: buyList) {
+
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("symbol", x.getSymbol());
+            jsonObject.put("price", x.getPrice());
+
+            buyJSON.put(jsonObject);
+        }
+
+        result.put(buyJSON);
+
+        JSONArray sellJSON = new JSONArray();
+        for (Security x: sellList) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("symbol", x.getSymbol());
+            jsonObject.put("price", x.getPrice());
+
+            sellJSON.put(jsonObject);
+
+        }
+        result.put(sellJSON);
+
+        return result.toString(4);
     }
 
     @Override
@@ -99,7 +124,6 @@ public class SecurityImplementation implements SecurityInterface {
             if (!((currHour > hour) || ((currHour.equals(hour) && currMin > minute)))) {
                 iterator.remove();
             }
-
         }
 
         securities.sort(new Comparator<SecurityModel>() {
@@ -128,7 +152,6 @@ public class SecurityImplementation implements SecurityInterface {
 
         JSONArray sellJSON = new JSONArray();
         for (SecurityModel x: sellList) {
-
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("symbol", x.getSymbol());
             jsonObject.put("price", x.getPrice());
@@ -136,7 +159,6 @@ public class SecurityImplementation implements SecurityInterface {
             sellJSON.put(jsonObject);
 
         }
-
         result.put(sellJSON);
 
         return result.toString(4);
