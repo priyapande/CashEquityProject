@@ -43,6 +43,7 @@ public class OrdersImplementation implements OrdersInterface {
         // Default order status is 0 i.e. un-executed order
         order.setOrderStatus(0);
         order.setRemainingquantity(order.getQuantity());
+        order.setValue(order.getLimitPrice() * order.getQuantity());
 
         // Insert command (no orderId because it is auto incremented by MySQL)
         String sql = "insert into orders" +
@@ -98,7 +99,7 @@ public class OrdersImplementation implements OrdersInterface {
 
         System.out.println(order.toString());
 
-        Netting netting = new Netting(order);
+        Netting netting = new Netting(order, jdbcTemplate);
         new Thread(netting).start();
 
     }
