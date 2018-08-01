@@ -1,7 +1,6 @@
 package com.cashEquityProject.cashEquity.extras;
 
 import com.cashEquityProject.cashEquity.model.Order;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -15,10 +14,10 @@ import java.util.logging.Logger;
 @Repository
 public class Netting implements Runnable{
 
-    JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
 
     private Order order;
-    Logger logger = Logger.getLogger(Netting.class.getName());
+    private Logger logger = Logger.getLogger(Netting.class.getName());
 
     public Netting() {}
 
@@ -30,26 +29,11 @@ public class Netting implements Runnable{
     @Override
     public void run() {
 
-        logger.info("Inside Netting run() function");
-
-        System.out.println(order.toString());
-
-//        String sqlBuy = "select * from orders where orderStatus in (0,1) and direction='S' and symbol=? and orderId!=?";
-//        String sqlSell = "select * from orders where orderStatus in (0,1) and direction='B' and symbol=? and orderId!=?";
-
         String sql = "select * from orders where orderStatus in (0, 1) and direction != ? and symbol = ? and orderId != ?";
 
         List<Order> orderList = jdbcTemplate.query(sql,
                                                     new Object[]{order.getDirection(), order.getSymbol(), order.getOrderId()},
                                                     new BeanPropertyRowMapper<>(Order.class));
-
-//        List<Order> buyNetList = jdbcTemplate.query(sqlBuy,
-//                new Object[]{order.getSymbol(), order.getOrderId()},
-//                new BeanPropertyRowMapper<>(Order.class));
-//
-//        List<Order> sellNetList = jdbcTemplate.query(sqlSell,
-//                new Object[]{order.getSymbol(), order.getOrderId()},
-//                new BeanPropertyRowMapper<>(Order.class));
 
         orderList.sort(new Comparator<Order>() {
 
@@ -61,6 +45,7 @@ public class Netting implements Runnable{
                 int cmp1;
 
                 if (direction.equals('B')){
+                    // For buy orders, best orders are
                     cmp1 = o2.getLimitPrice().compareTo(o1.getLimitPrice());
                 } else {
                     cmp1 = o1.getLimitPrice().compareTo(o2.getLimitPrice());
@@ -74,89 +59,49 @@ public class Netting implements Runnable{
             }
         });
 
-//        // limitprice DESC, tradeprice ASC
-//        buyNetList.sort(new Comparator<Order>() {
-//
-//            @Override
-//            public int compare(Order o1, Order o2) {
-//
-//                // o2 first because we want to sort in DESC order
-//                int cmp1 = o2.getLimitPrice().compareTo(o1.getLimitPrice());
-//
-//                if (cmp1 == 0) {
-//                    return TimeComparator.compare(o1.getTradetime(), o2.getTradetime());
-//                }
-//
-//                return cmp1;
-//            }
-//        });
-//
-//        // limitprice ASC, tradeprice ASC
-//        sellNetList.sort(new Comparator<Order>() {
-//
-//            @Override
-//            public int compare(Order o1, Order o2) {
-//
-//                int cmp1 = o1.getLimitPrice().compareTo(o2.getLimitPrice());
-//
-//                if (cmp1 == 0) {
-//                    return TimeComparator.compare(o1.getTradetime(), o2.getTradetime());
-//                }
-//
-//                return cmp1;
-//            }
-//        });
+        int pastRemaining, orderRemaining;
 
         for(Order pastOrderBuy: orderList) {
-            if (pastOrderBuy.getOrderStatus()!=2 && pastOrderBuy.getQuantity() > order.getQuantity()) {
-                order.setOrderStatus(2);
-                pastOrderBuy.setRemainingquantity(pastOrderBuy.getQuantity()-order.getQuantity());
+
+            // Do not process executed orders.
+            if (pastOrderBuy.getOrderStatus() == 2) {
+                continue;
+            }
+
+            pastRemaining = pastOrderBuy.getRemainingquantity();
+            orderRemaining = order.getRemainingquantity();
+
+            if (pastRemaining > orderRemaining) {
+                // Past order : partially executed
+                pastOrderBuy.setRemainingquantity(pastRemaining - orderRemaining);
                 pastOrderBuy.setOrderStatus(1);
+
+                // Mark current order as executed and break from loop
                 order.setRemainingquantity(0);
+                order.setOrderStatus(2);
                 break;
-            } else {
+
+            } else if (pastRemaining < orderRemaining){
+
+                // Mark current order as partially executed
                 order.setOrderStatus(1);
-                order.setRemainingquantity(order.getQuantity() - pastOrderBuy.getQuantity());
+                order.setRemainingquantity(orderRemaining - pastRemaining);
+
+                // Mark past order as executed
                 pastOrderBuy.setRemainingquantity(0);
                 pastOrderBuy.setOrderStatus(2);
+
+            } else {
+
+                // Mark past order as completed
+                pastOrderBuy.setRemainingquantity(0);
+                pastOrderBuy.setOrderStatus(2);
+
+                // Mark current order as completed
+                order.setRemainingquantity(0);
+                order.setOrderStatus(2);
             }
         }
-
-//        // BUY ORDER
-//        for(Order pastOrderBuy: buyNetList) {
-//           if (pastOrderBuy.getOrderStatus()!=2 && pastOrderBuy.getQuantity() > order.getQuantity()) {
-//               order.setOrderStatus(2);
-//               pastOrderBuy.setRemainingquantity(pastOrderBuy.getQuantity()-order.getQuantity());
-//               pastOrderBuy.setOrderStatus(1);
-//               order.setRemainingquantity(0);
-//               break;
-//           } else {
-//               order.setOrderStatus(1);
-//               order.setRemainingquantity(order.getQuantity() - pastOrderBuy.getQuantity());
-//               pastOrderBuy.setRemainingquantity(0);
-//               pastOrderBuy.setOrderStatus(2);
-//           }
-//       }
-//
-//        // SELL ORDER
-//        for(Order pastOrdersell: sellNetList) {
-//            if (pastOrdersell.getOrderStatus()!=2 && pastOrdersell.getQuantity() > order.getQuantity()) {
-//                order.setOrderStatus(2);
-//                pastOrdersell.setRemainingquantity(pastOrdersell.getQuantity()-order.getQuantity());
-//                pastOrdersell.setOrderStatus(1);
-//                order.setRemainingquantity(0);
-//                break;
-//            } else {
-//                order.setOrderStatus(1);
-//                order.setRemainingquantity(order.getQuantity()-pastOrdersell.getQuantity());
-//                pastOrdersell.setOrderStatus(2);
-//                pastOrdersell.setRemainingquantity(0);
-//            }
-//        }
-
-//        List<Order> updatedOrders = new ArrayList<Order>();
-//        updatedOrders.addAll(buyNetList);
-//        updatedOrders.addAll(sellNetList);
 
         // Update orders
         String updateQuery = "update orders set remainingquantity=?, orderstatus=? where orderid=?";

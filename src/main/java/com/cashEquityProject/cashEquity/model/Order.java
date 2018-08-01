@@ -1,19 +1,22 @@
 package com.cashEquityProject.cashEquity.model;
 
+import org.json.JSONObject;
+
 public class Order{
 
-    private Integer orderId;     // unique ID for the order
-    private String clientCode;  // Client code
-    private String symbol;    // Security Symbol of the order's security
-    private String tradedate;        // Date of trade (format e.g. 21-JUL-2018)
-    private String tradetime;        // Time of trade (format e.g. 09:30)
-    private Integer quantity;   // Quantity of shares.
-    private String tradeType;   // Type of trade (LIMIT or MARKET)
-    private Double limitPrice;  // Limit price (for LIMIT order) TODO: rename to just price? Maybe "limitPrice" term is for LIMIT ORDERS.
-    private Character direction;// Order direction : B(BUY) or S(SELL)
-    private Double value;       // Value of order = price x quantity
-    private Integer orderStatus;// Status of the order TODO: Decide values of status
-    private Integer remainingquantity; //Quantity of shares after netting and processing
+    private Integer orderId;            // unique ID for the order
+    private String clientCode;          // Client code
+    private String symbol;              // Security Symbol of the order's security
+    private String tradedate;           // Date of trade (format e.g. 21-JUL-2018)
+    private String tradetime;           // Time of trade (format e.g. 09:30)
+    private Integer quantity;           // Quantity of shares.
+    private String tradeType;           // Type of trade (LIMIT or MARKET)
+    private Double limitPrice;          // Limit price (for LIMIT order) TODO: rename to just price? Maybe "limitPrice" term is for LIMIT ORDERS.
+    private Character direction;        // Order direction : B(BUY) or S(SELL)
+    private Double value;               // Value of order = price x quantity
+    private Integer orderStatus;        // Status of the order TODO: Decide values of status
+    private Integer remainingquantity;  // Quantity of shares after netting and processing
+    private String matches;             // String containing JSON data for matched part of the order
 
     public Integer getRemainingquantity() {
         return remainingquantity;
@@ -113,6 +116,33 @@ public class Order{
 
     public void setOrderStatus(int orderStatus) {
         this.orderStatus = orderStatus;
+    }
+
+    public String getMatches() {
+        return matches;
+    }
+
+    public void setMatches(String matches) {
+        this.matches = matches;
+    }
+
+    public JSONObject toJSON() {
+        JSONObject jsonObject = new JSONObject();
+
+        jsonObject.put("orderId", orderId);
+        jsonObject.put("clientCode", clientCode);
+        jsonObject.put("symbol", symbol);
+        jsonObject.put("tradedate", tradedate);
+        jsonObject.put("tradetime", tradetime);
+        jsonObject.put("quantity", quantity);
+        jsonObject.put("tradeType", tradeType);
+        jsonObject.put("limitPrice", limitPrice);
+        jsonObject.put("direction", direction);
+        jsonObject.put("value", value);
+        jsonObject.put("orderStatus", orderStatus);
+        jsonObject.put("remainingquantity", remainingquantity);
+
+        return jsonObject;
     }
 
     @Override

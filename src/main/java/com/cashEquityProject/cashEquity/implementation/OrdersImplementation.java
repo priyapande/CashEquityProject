@@ -1,7 +1,11 @@
 package com.cashEquityProject.cashEquity.implementation;
 
 import com.cashEquityProject.cashEquity.extras.Netting;
+import com.cashEquityProject.cashEquity.extras.FinalClientAmount;
+import com.cashEquityProject.cashEquity.extras.Nettingv2;
+import com.cashEquityProject.cashEquity.extras.Report;
 import com.cashEquityProject.cashEquity.model.Order;
+import com.cashEquityProject.cashEquity.model.TopSecuritiesCount;
 import com.cashEquityProject.cashEquity.repository.OrdersInterface;
 
 import org.json.JSONArray;
@@ -48,8 +52,8 @@ public class OrdersImplementation implements OrdersInterface {
         // Insert command (no orderId because it is auto incremented by MySQL)
         String sql = "insert into orders" +
                     " (clientcode, symbol, tradedate, tradetime, quantity, tradetype, limitprice, direction, value," +
-                    " orderStatus, remainingquantity)" +
-                    " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    " orderStatus, remainingquantity, matches)" +
+                    " values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(sql,
                 new Object[]{
@@ -63,7 +67,8 @@ public class OrdersImplementation implements OrdersInterface {
                         order.getDirection(),
                         order.getValue(),
                         order.getOrderStatus(),
-                        order.getRemainingquantity()
+                        order.getRemainingquantity(),
+                        ""
                 },
                 new int[]{Types.VARCHAR, // client code
                         Types.VARCHAR,   // security symbol
@@ -75,7 +80,8 @@ public class OrdersImplementation implements OrdersInterface {
                         Types.CHAR,      // direction
                         Types.FLOAT,     // value
                         Types.INTEGER,   // order status
-                        Types.INTEGER    // remaining quantity
+                        Types.INTEGER,   // remaining quantity
+                        Types.VARCHAR    // Matches JSON
         });
 
         if(order.getDirection().equals('B')) {
@@ -97,9 +103,7 @@ public class OrdersImplementation implements OrdersInterface {
 
         order.setOrderId(orderid);
 
-        System.out.println(order.toString());
-
-        Netting netting = new Netting(order, jdbcTemplate);
+        Nettingv2 netting = new Nettingv2(order, jdbcTemplate);
         new Thread(netting).start();
 
     }
@@ -114,9 +118,29 @@ public class OrdersImplementation implements OrdersInterface {
 
         String sql = "select * from orders where clientCode = ?";
 
-        return jdbcTemplate.query(sql,
-                                new Object[]{code},
-                                new BeanPropertyRowMapper<>(Order.class));
+        List<Order> orders = jdbcTemplate.query(sql,
+                new Object[]{code},
+                new BeanPropertyRowMapper<>(Order.class));
+        return orders;
+
+//        Double balance;
+//        JSONObject jsonObject;
+//        JSONArray jsonArray = new JSONArray();
+//
+//        for (Order order: orders) {
+//            balance = order.getLimitPrice() * (order.getQuantity() - order.getRemainingquantity());
+//            if (order.getDirection().equals('B')) {
+//                balance = -1 * balance;
+//            }
+//
+//            jsonObject = order.toJSON();
+////            jsonObject.put("balance", balance);
+//            jsonArray.put(jsonObject);
+//
+//        }
+//
+//        return jsonArray.toString(4);
+
     }
 
     @Override
