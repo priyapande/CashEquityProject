@@ -32,4 +32,8 @@ public class SecurityController {
         return securityImplementation.getTopSecuritiesByCount();
     }
 
+    @RequestMapping(value = "/getSecuritiesByClient/{date}/{time}/{clientCode}")
+    public String getSecuritiesByClient(@PathVariable String date, @PathVariable String time, @PathVariable String clientCode) {
+        return securityImplementation.getSecuritiesByClient(date, time, clientCode);
+    }
 }

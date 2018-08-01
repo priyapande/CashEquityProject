@@ -11,4 +11,6 @@ public interface SecurityInterface {
     String getTopSecuritiesByPrice(String date, String time);
 
     String getTopSecuritiesByCount();
+
+    String getSecuritiesByClient(String date, String time, String clientCode);
 }
