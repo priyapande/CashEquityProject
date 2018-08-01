@@ -79,4 +79,9 @@ public class OrderController {
         // The list contains 10 elements, first 5 as the top 5 Buy orders and the rest 5 as the top 5 sell orders
         return ordersImplementation.getTopOrders(symbol);
     }
+
+    @RequestMapping(value = "/getReportByClient/{clientCode}")
+    public String getReportByClient(@PathVariable String clientCode) {
+        return ordersImplementation.getClientReport(clientCode);
+    }
 }
