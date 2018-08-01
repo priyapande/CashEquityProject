@@ -22,5 +22,7 @@ public interface OrdersInterface {
 
     // Returns top 5 sell and buy orders for a particular security
     String getTopOrders(String symbol);
+
+    String getClientReport(String clientCode);
 }
 

@@ -1,9 +1,6 @@
 package com.cashEquityProject.cashEquity.implementation;
 
-import com.cashEquityProject.cashEquity.extras.Netting;
-import com.cashEquityProject.cashEquity.extras.FinalClientAmount;
-import com.cashEquityProject.cashEquity.extras.Nettingv2;
-import com.cashEquityProject.cashEquity.extras.Report;
+import com.cashEquityProject.cashEquity.extras.*;
 import com.cashEquityProject.cashEquity.model.Order;
 import com.cashEquityProject.cashEquity.model.TopSecuritiesCount;
 import com.cashEquityProject.cashEquity.repository.OrdersInterface;
@@ -17,7 +14,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Types;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 
@@ -219,5 +216,95 @@ public class OrdersImplementation implements OrdersInterface {
         result.put(sellArray);
 
         return result.toString();
+    }
+
+    @Override
+    public String getClientReport(String clientCode) {
+
+
+        JSONArray result = new JSONArray();
+
+        String sql = "select * from orders where clientCode = ?";
+        List<Order> orders = jdbcTemplate.query(sql,
+                                                new Object[] {clientCode},
+                                                new BeanPropertyRowMapper<>(Order.class)
+                                                );
+
+        // Get unique symbols
+        Set<String> symbols = new LinkedHashSet<String>();
+        for (Order order: orders) {
+            symbols.add(order.getSymbol());
+        }
+
+        for (String symbol: symbols) {
+
+            Double balance = 0.0;
+            Integer quantity = 0;
+            BalanceQuantity balanceQuantity;
+            JSONObject jsonObject = new JSONObject();
+            Iterator<Order> iterator = orders.iterator();
+
+            while (iterator.hasNext()) {
+
+                Order order = iterator.next();
+
+                if (order.getSymbol().equals(symbol)) {
+
+                    balanceQuantity = getOrderBalance(order);
+                    quantity += balanceQuantity.getQuantity();
+
+                    if (order.getDirection().equals('B')) {
+                        balance += -1*balanceQuantity.getBalance();
+                    } else {
+                        balance += balanceQuantity.getBalance();
+                    }
+
+                    iterator.remove();
+                }
+            }
+
+            jsonObject.put("quantity", quantity);   // Total Quantity processed
+            jsonObject.put("balance", balance);     // Net payable/receivable
+            jsonObject.put("symbol", symbol);       // Security Symbol
+
+            result.put(jsonObject);
+
+        }
+
+        return result.toString();
+
+    }
+
+    private BalanceQuantity getOrderBalance(Order order) {
+
+        Double balance = 0.0;
+        Integer quantity = 0;
+        JSONArray jsonArray;
+        BalanceQuantity balanceQuantity = new BalanceQuantity();
+
+        if (order.getMatches().equals("")) {
+
+            logger.warning("No match column in order");
+
+            balanceQuantity.setQuantity(0);
+            balanceQuantity.setBalance(0.0);
+            return balanceQuantity;
+        }
+
+        jsonArray = new JSONArray(order.getMatches());
+
+
+        for (Object match: jsonArray) {
+
+            quantity += ((JSONObject) match).getInt("quantity");
+            balance += ((JSONObject) match).getDouble("price");
+
+        }
+
+        balanceQuantity.setBalance(balance);
+        balanceQuantity.setQuantity(quantity);
+
+        return balanceQuantity;
+
     }
 }
