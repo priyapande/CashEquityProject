@@ -8,7 +8,9 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.sql.Time;
 import java.sql.Types;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -31,7 +33,7 @@ public class Nettingv2 implements Runnable{
     @Override
     public void run() {
 
-        if (order.getTradeType().toLowerCase().equals("limit")) {
+        if (order.getTradeType().toLowerCase().equals("market")) {
             runMarketOrder();
         } else {
             runLimitOrder();
@@ -45,27 +47,29 @@ public class Nettingv2 implements Runnable{
         JSONArray jsonArray = new JSONArray();
 
         String orderBy = "ASC";
+        String comp = "<=";
         if (order.getDirection().equals('S')) {
             orderBy = "DESC";
+            comp = ">=";
         }
 
-        String sql = "select * from orders where direction != ? and symbol = ? and orderid != ? and limitprice <= ? order by limitprice " + orderBy + ", tradetime ASC";
 
-        try {
+        String sql = "select * from orders where direction != ? and symbol = ? and orderid != ? and limitprice " + comp + " ? order by limitprice " + orderBy;
 
-            selectedOrders = jdbcTemplate.query(sql,
+        selectedOrders = jdbcTemplate.query(sql,
                     new Object[]{order.getDirection(), order.getSymbol(), order.getOrderId(), order.getLimitPrice()},
                     new BeanPropertyRowMapper<>(Order.class));
 
-            selectedOrders = executeTrade(selectedOrders);
-            updateTable(selectedOrders);
+        // Equivalent to order by tradetime ASC
+        selectedOrders.sort(new Comparator<Order>() {
+            @Override
+            public int compare(Order o1, Order o2) {
+                return TimeComparator.compare(o1.getTradetime(), o2.getTradetime());
+            }
+        });
 
-        } catch (DataAccessException exp) {
-
-            // This means, there is no order in the market right now to match with the new order.
-
-        }
-
+        selectedOrders = executeTrade(selectedOrders);
+        updateTable(selectedOrders);
 
     }
 
@@ -79,13 +83,23 @@ public class Nettingv2 implements Runnable{
             orderBy = "DESC";
         }
 
-        String sql = "select * from orders where direction != ? and symbol = ? and orderid != ? order by limitprice " + orderBy + ", tradetime ASC";
+        String sql = "select * from orders where direction != ? and symbol = ? and orderid != ? order by limitprice " + orderBy;
 
-        selectedOrders = (List<Order>) (Object)jdbcTemplate.queryForList(sql,
+        selectedOrders = (List<Order>) (Object) jdbcTemplate.queryForList(sql,
                                             new Object[]{order.getDirection(), order.getSymbol(), order.getOrderId()},
                                             new BeanPropertyRowMapper<>(Order.class));
 
+        // Equivalent to order by tradetime ASC
+        selectedOrders.sort(new Comparator<Order>() {
+            @Override
+            public int compare(Order o1, Order o2) {
+                return TimeComparator.compare(o1.getTradetime(), o2.getTradetime());
+            }
+        });
+
         if (selectedOrders.size() == 0) {
+
+            // TODO: Confirm this action.
 
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("status", config.FAILED);
@@ -106,6 +120,7 @@ public class Nettingv2 implements Runnable{
     private List<Order> executeTrade(List<Order> orders) {
 
         int rowRemaining, remaining;
+        Double lastPriceMatch = -1.0;
 
         // NOTE: matches for order(newly inserted) will be ''.
         JSONArray rowJSONArray;
@@ -113,7 +128,11 @@ public class Nettingv2 implements Runnable{
 
         for (Order rowOrder: orders) {
 
-            rowJSONArray = new JSONArray(rowOrder.getMatches());
+            if (rowOrder.getMatches().equals("")) {
+                rowJSONArray = new JSONArray();
+            } else {
+                rowJSONArray = new JSONArray(rowOrder.getMatches());
+            }
 
             JSONObject jsonObject = new JSONObject();   // for order (newly inserted)
             JSONObject rowJSON = new JSONObject();      // for row order
@@ -137,6 +156,8 @@ public class Nettingv2 implements Runnable{
                 jsonObject.put("price", rowOrder.getLimitPrice());
                 jsonObject.put("quantity", remaining);
 
+                lastPriceMatch = rowOrder.getLimitPrice();
+
             } else if (rowRemaining < remaining) {
 
                 rowOrder.setRemainingquantity(0);
@@ -153,6 +174,7 @@ public class Nettingv2 implements Runnable{
                 jsonObject.put("price", rowOrder.getLimitPrice());
                 jsonObject.put("quantity", rowRemaining);
 
+                lastPriceMatch = rowOrder.getLimitPrice();
 
             } else {
 
@@ -170,6 +192,8 @@ public class Nettingv2 implements Runnable{
                 jsonObject.put("price", rowOrder.getLimitPrice());
                 jsonObject.put("quantity", remaining); // or rowRemaining
 
+                lastPriceMatch = rowOrder.getLimitPrice();
+
             }
 
             rowJSONArray.put(rowJSON); // Add new match entry for roworder
@@ -186,14 +210,12 @@ public class Nettingv2 implements Runnable{
         // Set Matches JSON array string to order (newly inserted).
         order.setMatches(orderJSONArray.toString());
 
+        // For partially executed market order, set LimitPrice to last matched price.
+        // This is done because, a partially executed market order has to be put to order book, so it must carry a price.
         if (order.getTradeType().toLowerCase().equals("market")) {
-
             if (order.getRemainingquantity() > 0) {
-
-                order.setLimitPrice();
-
+                order.setLimitPrice(lastPriceMatch);
             }
-
         }
 
         return orders;
@@ -202,38 +224,27 @@ public class Nettingv2 implements Runnable{
 
     private void updateTable(List<Order> selectedOrders) {
 
-        String sql = "update orders (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) set " +
-                    "clientCode=?, symbol=?, tradedate=?, tradetime=?, quantity=?, tradetype=?, limitprice=?, direction=?, value=?, orderstatus=?, remainingquantity=?, matches=? " +
+        String sql = "update orders set " +
+                    "limitprice=?, value=?, orderstatus=?, remainingquantity=?, matches=? " +
                     "where orderid = ?";
 
-        int n = selectedOrders.size();
+        selectedOrders.add(order);
 
-        for (int i = 0; i < n ; i++) {
+        for (Order rowOrder: selectedOrders) {
 
-            Order rowOrder = selectedOrders.get(i);
+            // TODO: What to put in Value field??
 
             jdbcTemplate.update(sql,
-                    rowOrder.getClientCode(),
-                    rowOrder.getSymbol(),
-                    rowOrder.getTradedate(),
-                    rowOrder.getTradetime(),
-                    rowOrder.getQuantity(),
-                    rowOrder.getTradeType(),
-                    rowOrder.getLimitPrice(),
-                    rowOrder.getDirection(),
-                    rowOrder.getValue(),
-                    rowOrder.getOrderStatus(),
-                    rowOrder.getRemainingquantity(),
-                    rowOrder.getMatches(),
-                    rowOrder.getOrderId(),
-                    new int[]{Types.VARCHAR, // client code
-                            Types.VARCHAR,   // security symbol
-                            Types.VARCHAR,   // trade date
-                            Types.VARCHAR,   // trade time
-                            Types.INTEGER,   // quantity
-                            Types.VARCHAR,   // trade type
+                    new Object[]{
+                                rowOrder.getLimitPrice(),
+                                rowOrder.getValue(),
+                                rowOrder.getOrderStatus(),
+                                rowOrder.getRemainingquantity(),
+                                rowOrder.getMatches(),
+                                rowOrder.getOrderId(),
+                    },
+                    new int[]{
                             Types.FLOAT,     // limit price
-                            Types.CHAR,      // direction
                             Types.FLOAT,     // value
                             Types.INTEGER,   // order status
                             Types.INTEGER,   // remaining quantity,
