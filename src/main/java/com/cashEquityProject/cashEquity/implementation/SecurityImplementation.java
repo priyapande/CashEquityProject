@@ -55,14 +55,14 @@ public class SecurityImplementation implements SecurityInterface {
         JSONArray result = new JSONArray();
 
         // Top 5 Buy Securities
-        String buyQuery = "select symbol, buycount as count from securities order by buycount desc limit 5";
+        String buyQuery = "select symbol, buycount as count from securities where buycount > 0 order by buycount desc limit 5";
 
         List<TopSecuritiesCount> buyList = jdbcTemplate.query(buyQuery,
                                                     new Object[]{},
                                                     new BeanPropertyRowMapper<>(TopSecuritiesCount.class));
 
         // Top 5 Sell Securities
-        String sellQuery = "select symbol, sellcount as count from securities order by sellcount desc limit 5";
+        String sellQuery = "select symbol, sellcount as count from securities where sellcount > 0 order by sellcount desc limit 5";
 
         List<TopSecuritiesCount> sellList = jdbcTemplate.query(sellQuery,
                 new Object[]{},

@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.List;
 
-public class finalClientAmount {
+public class FinalClientAmount {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
@@ -15,7 +15,7 @@ public class finalClientAmount {
     private double payable;
     private int processedQuantity;
 
-    public finalClientAmount() {
+    public FinalClientAmount() {
         this.receivable = 0;
         this.payable = 0;
         this.processedQuantity = 0;

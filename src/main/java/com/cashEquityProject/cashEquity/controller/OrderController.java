@@ -1,9 +1,7 @@
 package com.cashEquityProject.cashEquity.controller;
 
-import com.cashEquityProject.cashEquity.extras.Netting;
 import com.cashEquityProject.cashEquity.model.Order;
 import com.cashEquityProject.cashEquity.implementation.OrdersImplementation;
-import com.cashEquityProject.cashEquity.model.Security;
 import com.cashEquityProject.cashEquity.repository.config;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,29 +16,26 @@ import java.util.List;
 )
 public class OrderController {
 
-    JSONObject jsonObject = new JSONObject();
-
     @Autowired
-    OrdersImplementation ordersImplementation;
+    private OrdersImplementation ordersImplementation;
 
     @RequestMapping(value="/addOrder")
     public String addOrder(@RequestBody Order order){
 
-//        try {
+        JSONObject jsonObject = new JSONObject();
+
+        try {
             ordersImplementation.addOrder(order);
 
-            // TODO: Return proper JSON
-            //return "Data saved successfully";
             jsonObject.put("status", config.SUCCESS);
             return jsonObject.toString();
-//        }
-//        catch (Exception e)
-//        {
-//            System.out.println(e.toString());
-//            jsonObject.put("status", config.FAILED);
-//            return jsonObject.toString();
-//
-//        }
+
+        } catch (Exception exp) {
+            jsonObject.put("status", config.FAILED);
+            jsonObject.put("msg", exp.getMessage());
+        }
+
+        return jsonObject.toString();
 
     }
 
@@ -55,11 +50,11 @@ public class OrderController {
     @RequestMapping(value="/deleteOrder/{orderId}")
     public String deleteOrder(@PathVariable String orderId){
 
+        JSONObject jsonObject = new JSONObject();
+
         // Delete an order using orderId
         ordersImplementation.deleteOrder(orderId);
 
-        // TODO: Return proper JSON
-        //return "Data deleted successfully";
         jsonObject.put("status", config.SUCCESS);
         return jsonObject.toString();
 
@@ -67,6 +62,8 @@ public class OrderController {
     }
     @RequestMapping(value="/cancelOrder/{orderId}")
     public String cancelOrder(@PathVariable String orderId){
+
+        JSONObject jsonObject = new JSONObject();
 
         // Change status of order using orderId
         ordersImplementation.cancelOrder(orderId);
