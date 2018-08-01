@@ -20,22 +20,25 @@ mysql> describe credentials;
 2 rows in set (0.00 sec)
 
 mysql> describe orders;
-+-------------+-------------+------+-----+---------+----------------+
-| Field       | Type        | Null | Key | Default | Extra          |
-+-------------+-------------+------+-----+---------+----------------+
-| orderid     | int(7)      | NO   | PRI | NULL    | auto_increment |
-| clientcode  | varchar(5)  | NO   | MUL | NULL    |                |
-| symbol      | varchar(20) | YES  | MUL | NULL    |                |
-| tradedate   | varchar(11) | YES  |     | NULL    |                |
-| tradetime   | varchar(6)  | YES  |     | NULL    |                |
-| quantity    | int(5)      | YES  |     | NULL    |                |
-| tradetype   | varchar(10) | YES  |     | NULL    |                |
-| limitprice  | float(6,2)  | YES  |     | NULL    |                |
-| direction   | char(1)     | YES  |     | NULL    |                |
-| value       | float(11,2) | YES  |     | NULL    |                |
-| orderstatus | int(3)      | NO   |     | NULL    |                |
-+-------------+-------------+------+-----+---------+----------------+
-11 rows in set (0.00 sec)
++-------------------+-------------+------+-----+---------+----------------+
+| Field             | Type        | Null | Key | Default | Extra          |
++-------------------+-------------+------+-----+---------+----------------+
+| orderid           | int(7)      | NO   | PRI | NULL    | auto_increment |
+| clientcode        | varchar(5)  | NO   | MUL | NULL    |                |
+| symbol            | varchar(20) | YES  | MUL | NULL    |                |
+| tradedate         | varchar(11) | YES  |     | NULL    |                |
+| tradetime         | varchar(6)  | YES  |     | NULL    |                |
+| quantity          | int(5)      | YES  |     | NULL    |                |
+| tradetype         | varchar(10) | YES  |     | NULL    |                |
+| limitprice        | float(10,2) | YES  |     | NULL    |                |
+| direction         | char(1)     | YES  |     | NULL    |                |
+| value             | float(11,2) | YES  |     | NULL    |                |
+| orderstatus       | int(3)      | NO   |     | 0       |                |
+| remainingquantity | int(5)      | YES  |     | NULL    |                |
+| matches           | text        | YES  |     | NULL    |                |
++-------------------+-------------+------+-----+---------+----------------+
+13 rows in set (0.00 sec)
+
 
 mysql> describe securities;
 +--------------------+-------------+------+-----+---------+-------+
