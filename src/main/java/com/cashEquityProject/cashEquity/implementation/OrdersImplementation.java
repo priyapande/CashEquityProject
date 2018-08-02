@@ -5,6 +5,7 @@ import com.cashEquityProject.cashEquity.model.Order;
 import com.cashEquityProject.cashEquity.model.TopSecuritiesCount;
 import com.cashEquityProject.cashEquity.repository.OrdersInterface;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import com.cashEquityProject.cashEquity.repository.config;
@@ -30,6 +31,8 @@ public class OrdersImplementation implements OrdersInterface {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    private HashMap<ClientOrder, Boolean> reviewedOrders;
+
     private static final Logger logger = Logger.getLogger(OrdersImplementation.class.getName());
 
     @Override
@@ -46,6 +49,7 @@ public class OrdersImplementation implements OrdersInterface {
         order.setOrderStatus(0);
         order.setRemainingquantity(order.getQuantity());
         order.setValue(order.getLimitPrice() * order.getQuantity());
+        order.setMatches("");
 
         // Insert command (no orderId because it is auto incremented by MySQL)
         String sql = "insert into orders" +
@@ -66,7 +70,7 @@ public class OrdersImplementation implements OrdersInterface {
                         order.getValue(),
                         order.getOrderStatus(),
                         order.getRemainingquantity(),
-                        ""
+                        order.getMatches()
                 },
                 new int[]{Types.VARCHAR, // client code
                         Types.VARCHAR,   // security symbol
@@ -116,9 +120,13 @@ public class OrdersImplementation implements OrdersInterface {
 
         String sql = "select * from orders where clientCode = ?";
 
+        System.out.println("Before");
+
         List<Order> orders = jdbcTemplate.query(sql,
                 new Object[]{code},
                 new BeanPropertyRowMapper<>(Order.class));
+
+        System.out.println("After");
         return orders;
 
 //        Double balance;
@@ -224,6 +232,7 @@ public class OrdersImplementation implements OrdersInterface {
 
 
         JSONArray result = new JSONArray();
+        reviewedOrders = new HashMap<ClientOrder, Boolean>();
 
         String sql = "select * from orders where clientCode = ?";
         List<Order> orders = jdbcTemplate.query(sql,
@@ -241,6 +250,7 @@ public class OrdersImplementation implements OrdersInterface {
 
             Double balance = 0.0;
             Integer quantity = 0;
+            // Integer remaining = 0;
             BalanceQuantity balanceQuantity;
             JSONObject jsonObject = new JSONObject();
             Iterator<Order> iterator = orders.iterator();
@@ -260,13 +270,16 @@ public class OrdersImplementation implements OrdersInterface {
                         balance += balanceQuantity.getBalance();
                     }
 
+                    // remaining += order.getRemainingquantity();
+
                     iterator.remove();
                 }
             }
 
-            jsonObject.put("quantity", quantity);   // Total Quantity processed
-            jsonObject.put("balance", balance);     // Net payable/receivable
-            jsonObject.put("symbol", symbol);       // Security Symbol
+            jsonObject.put("quantity", quantity);     // Total Quantity processed
+            jsonObject.put("balance", balance);          // Net payable/receivable
+            jsonObject.put("symbol", symbol);            // Security Symbol
+            // jsonObject.put("remaining", remaining);      // Remaining quantity
 
             result.put(jsonObject);
 
@@ -294,11 +307,21 @@ public class OrdersImplementation implements OrdersInterface {
 
         jsonArray = new JSONArray(order.getMatches());
 
-
         for (Object match: jsonArray) {
 
-            quantity += ((JSONObject) match).getInt("quantity");
-            balance += ((JSONObject) match).getDouble("price");
+            Integer orderid = ((JSONObject) match).getInt("orderid");
+            String clientcode = ((JSONObject) match).getString("client");
+
+            ClientOrder clientOrder = new ClientOrder(clientcode, orderid);
+            Integer quan;
+
+            quan = ((JSONObject) match).getInt("quantity");
+
+            if (reviewedOrders.get(clientOrder) == null) {
+                quantity += quan;
+            }
+
+            balance += (quan * ((JSONObject) match).getDouble("price"));
 
         }
 
