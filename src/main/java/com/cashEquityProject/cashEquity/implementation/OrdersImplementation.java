@@ -198,24 +198,24 @@ public class OrdersImplementation implements OrdersInterface {
                                          new Object[]{symbol},
                                          new BeanPropertyRowMapper<>(Order.class));
 
-        // Top 5 Sell Orders
-        String sql2 = "select * from orders where symbol = ? and direction = 'S' and orderstatus in (0, 1) order by limitprice ASC limit 5";
-
-        securityList.addAll(jdbcTemplate.query(sql2,
-                            new Object[]{symbol},
-                            new BeanPropertyRowMapper<>(Order.class)));
-
         JSONArray buyArray = new JSONArray();
-        for (int i=0; i<5; i++) {
+        for (Order order: securityList) {
             JSONObject buyObject = new JSONObject();
-            buyObject.put("price", securityList.get(i).getLimitPrice());
+            buyObject.put("price", order.getLimitPrice());
             buyArray.put(buyObject);
         }
 
+        // Top 5 Sell Orders
+        String sql2 = "select * from orders where symbol = ? and direction = 'S' and orderstatus in (0, 1) order by limitprice ASC limit 5";
+
+        List<Order> securityList1 = jdbcTemplate.query(sql2,
+                            new Object[]{symbol},
+                            new BeanPropertyRowMapper<>(Order.class));
+
         JSONArray sellArray = new JSONArray();
-        for (int i=5; i<10; i++) {
+        for (Order order: securityList1) {
             JSONObject sellObject = new JSONObject();
-            sellObject.put("price", securityList.get(i).getLimitPrice());
+            sellObject.put("price", order.getLimitPrice());
             sellArray.put(sellObject);
         }
 

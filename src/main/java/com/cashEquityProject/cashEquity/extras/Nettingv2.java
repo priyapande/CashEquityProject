@@ -230,7 +230,7 @@ public class Nettingv2 implements Runnable{
     private void updateTable(List<Order> selectedOrders) {
 
         String sql = "update orders set " +
-                    "limitprice=?, value=?, orderstatus=?, remainingquantity=?, matches=? " +
+                    "limitprice=?, orderstatus=?, remainingquantity=?, matches=? " +
                     "where orderid = ?";
 
         selectedOrders.add(order);
@@ -242,7 +242,6 @@ public class Nettingv2 implements Runnable{
             jdbcTemplate.update(sql,
                     new Object[]{
                                 rowOrder.getLimitPrice(),
-                                rowOrder.getValue(),
                                 rowOrder.getOrderStatus(),
                                 rowOrder.getRemainingquantity(),
                                 rowOrder.getMatches(),
@@ -250,7 +249,6 @@ public class Nettingv2 implements Runnable{
                     },
                     new int[]{
                             Types.FLOAT,     // limit price
-                            Types.FLOAT,     // value
                             Types.INTEGER,   // order status
                             Types.INTEGER,   // remaining quantity,
                             Types.VARCHAR,   // Match JSON string
