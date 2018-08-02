@@ -31,5 +31,4 @@ public class SecurityController {
     public String getTopSecuritiesByCount() {
         return securityImplementation.getTopSecuritiesByCount();
     }
-
 }

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.sql.Types;
 import java.util.*;
@@ -330,4 +331,36 @@ public class OrdersImplementation implements OrdersInterface {
         return balanceQuantity;
 
     }
+
+    @Override
+    public void updateOrder(String orderId, Integer quantity, Double limitPrice){
+        String sql = "update orders set quantity = ?, limitprice = ? where orderId = ? ";
+
+        jdbcTemplate.update(sql,
+                new Object[]{quantity, limitPrice, orderId},
+                new int[]{Types.INTEGER, Types.DOUBLE, Types.INTEGER});
+    }
+
+//    @Override
+//    public String getOrderById(String orderId){
+//
+//        String result;
+//        String sql = "select * from orders where orderId = ?";
+//
+//        Order order = jdbcTemplate.queryForObject(sql,
+//                new Object[]{orderId},
+//                new BeanPropertyRowMapper<>(Order.class));
+//
+//        JSONArray matches = new JSONArray(order.getMatches());
+//
+//        Integer balanceQuantity =;
+//        Double offerPrice;
+//        Double recPay;
+//
+//        result = order.getOrderId() + "," + order.getSymbol() + "," + order.getDirection() + "," + order.getOrderStatus() +
+//                "," + order.getTradedate() + "," + order.getTradetime() + "," + order. getRemainingquantity() +
+//                "," + balanceQuantity + "," + offerPrice + "" + recPay;
+//        return result;
+//    }
+
 }

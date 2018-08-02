@@ -5,6 +5,7 @@ import com.cashEquityProject.cashEquity.implementation.OrdersImplementation;
 import com.cashEquityProject.cashEquity.repository.config;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.QualifierAnnotationAutowireCandidateResolver;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -84,4 +85,20 @@ public class OrderController {
     public String getReportByClient(@PathVariable String clientCode) {
         return ordersImplementation.getClientReport(clientCode);
     }
+
+    @RequestMapping(value="/updateOrder/clientCode/orderId/quantity/price")
+    public String updateOrder(@PathVariable String orderId, @PathVariable Integer quantity, @PathVariable Double limitPrice){
+        JSONObject jsonObject = new JSONObject();
+
+        ordersImplementation.updateOrder(orderId, quantity, limitPrice);
+
+        jsonObject.put("status", config.SUCCESS);
+        return jsonObject.toString();
+    }
+
+//    @RequestMapping(value="/getOrderById/{orderId}")
+//    public String getOrderById(@PathVariable String orderId){
+//        return ordersImplementation.getOrderById(orderId);
+//
+//    }
 }

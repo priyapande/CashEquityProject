@@ -24,5 +24,9 @@ public interface OrdersInterface {
     String getTopOrders(String symbol);
 
     String getClientReport(String clientCode);
+
+    void updateOrder(String orderId, Integer quantity, Double limitPrice);
+
+//    String getOrderById(String orderId);
 }
 
