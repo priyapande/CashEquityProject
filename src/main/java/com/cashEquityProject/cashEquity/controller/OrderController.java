@@ -19,7 +19,7 @@ public class OrderController {
     @Autowired
     private OrdersImplementation ordersImplementation;
 
-    @RequestMapping(value="/addOrder")
+    @PostMapping(value="/addOrder")
     public String addOrder(@RequestBody Order order){
 
         JSONObject jsonObject = new JSONObject();

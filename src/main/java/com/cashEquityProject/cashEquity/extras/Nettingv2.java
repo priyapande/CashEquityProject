@@ -126,6 +126,10 @@ public class Nettingv2 implements Runnable{
 
         for (Order rowOrder: orders) {
 
+            if (order.getOrderStatus() == 2) {
+                break;
+            }
+
             if (rowOrder.getMatches().equals("")) {
                 rowJSONArray = new JSONArray();
             } else {
@@ -136,6 +140,10 @@ public class Nettingv2 implements Runnable{
             JSONObject rowJSON = new JSONObject();      // for row order
 
             rowRemaining = rowOrder.getRemainingquantity();
+            if (rowRemaining == 0) {
+                continue;
+            }
+
             remaining = order.getRemainingquantity();
 
             if (rowRemaining > remaining) {
@@ -194,14 +202,13 @@ public class Nettingv2 implements Runnable{
 
             }
 
+            rowJSON.put("client", order.getClientCode());
+            jsonObject.put("client", rowOrder.getClientCode());
+
             rowJSONArray.put(rowJSON); // Add new match entry for roworder
             rowOrder.setMatches(rowJSONArray.toString());
 
             orderJSONArray.put(jsonObject); // Add new match for order
-
-            if (order.getOrderStatus() == 2) {
-                break;
-            }
 
         }
 
