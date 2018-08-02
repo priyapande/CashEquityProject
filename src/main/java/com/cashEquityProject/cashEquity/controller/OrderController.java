@@ -86,8 +86,8 @@ public class OrderController {
         return ordersImplementation.getClientReport(clientCode);
     }
 
-    @RequestMapping(value="/updateOrder/clientCode/orderId/quantity/price")
-    public String updateOrder(@PathVariable String orderId, @PathVariable Integer quantity, @PathVariable Double limitPrice){
+    @RequestMapping(value="/updateOrder/{orderId}/{quantity}/{limitPrice}")
+    public String updateOrder(@PathVariable Integer orderId, @PathVariable Integer quantity, @PathVariable Double limitPrice){
         JSONObject jsonObject = new JSONObject();
 
         ordersImplementation.updateOrder(orderId, quantity, limitPrice);

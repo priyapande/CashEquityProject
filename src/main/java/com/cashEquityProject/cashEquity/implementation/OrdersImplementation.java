@@ -106,7 +106,8 @@ public class OrdersImplementation implements OrdersInterface {
         order.setOrderId(orderid);
 
         Nettingv2 netting = new Nettingv2(order, jdbcTemplate);
-        new Thread(netting).start();
+//        new Thread(netting).start();
+        netting.run();
 
     }
 
@@ -120,13 +121,30 @@ public class OrdersImplementation implements OrdersInterface {
 
         String sql = "select * from orders where clientCode = ?";
 
-        System.out.println("Before");
-
         List<Order> orders = jdbcTemplate.query(sql,
                 new Object[]{code},
                 new BeanPropertyRowMapper<>(Order.class));
 
-        System.out.println("After");
+        for (Order order: orders) {
+            String match = order.getMatches();
+            JSONArray jsonArray;
+
+            if (match.equals("")){
+                jsonArray = new JSONArray();
+            } else {
+                jsonArray = new JSONArray(match);
+                if (jsonArray.length() == 0) {
+                    continue;
+                }
+
+                JSONObject jsonObject = (JSONObject) jsonArray.get(jsonArray.length()-1);
+
+                order.setLimitPrice(jsonObject.getDouble("price"));
+
+            }
+
+        }
+
         return orders;
 
 //        Double balance;
@@ -157,7 +175,7 @@ public class OrdersImplementation implements OrdersInterface {
          *  orderId : Order Id.
          */
 
-        String sql = "update orders set orderstatus = " + config.EXECUTED  + " where orderId=?";
+        String sql = "update orders set orderstatus = " + config.ORDER_CANCELLED  + " where orderId=?";
 
         jdbcTemplate.update(sql,
                 new Object[]{orderId},
@@ -202,6 +220,7 @@ public class OrdersImplementation implements OrdersInterface {
         JSONArray buyArray = new JSONArray();
         for (Order order: securityList) {
             JSONObject buyObject = new JSONObject();
+            buyObject.put("quantity", order.getRemainingquantity());
             buyObject.put("price", order.getLimitPrice());
             buyArray.put(buyObject);
         }
@@ -217,6 +236,7 @@ public class OrdersImplementation implements OrdersInterface {
         for (Order order: securityList1) {
             JSONObject sellObject = new JSONObject();
             sellObject.put("price", order.getLimitPrice());
+            sellObject.put("quantity", order.getRemainingquantity());
             sellArray.put(sellObject);
         }
 
@@ -333,12 +353,15 @@ public class OrdersImplementation implements OrdersInterface {
     }
 
     @Override
-    public void updateOrder(String orderId, Integer quantity, Double limitPrice){
-        String sql = "update orders set quantity = ?, limitprice = ? where orderId = ? ";
+    public void updateOrder(Integer orderId, Integer quantity, Double limitPrice){
+
+        Double value = quantity*limitPrice;
+
+        String sql = "update orders set quantity = ?, limitprice = ?, value = ? where orderId = ? ";
 
         jdbcTemplate.update(sql,
-                new Object[]{quantity, limitPrice, orderId},
-                new int[]{Types.INTEGER, Types.DOUBLE, Types.INTEGER});
+                new Object[]{quantity, limitPrice, value, orderId},
+                new int[]{Types.INTEGER, Types.DOUBLE, Types.DOUBLE, Types.INTEGER});
     }
 
 //    @Override

@@ -12,7 +12,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
 
-public class Nettingv2 implements Runnable{
+public class Nettingv2{
 
     private JdbcTemplate jdbcTemplate;
 
@@ -28,7 +28,6 @@ public class Nettingv2 implements Runnable{
 
     }
 
-    @Override
     public void run() {
 
         if (order.getTradeType().toLowerCase().equals("market")) {
@@ -45,26 +44,51 @@ public class Nettingv2 implements Runnable{
         JSONArray jsonArray = new JSONArray();
 
         String orderBy = "ASC";
+        String dir = "S";
         String comp = "<=";
         if (order.getDirection().equals('S')) {
             orderBy = "DESC";
             comp = ">=";
+            dir = "B";
         }
 
 
-        String sql = "select * from orders where direction != ? and symbol = ? and orderid != ? and limitprice " + comp + " ? order by limitprice " + orderBy;
+        String sql = "select * from orders where direction = '" + dir + "' and symbol = ? and orderid != ? and limitprice " + comp + " ?";
 
         selectedOrders = jdbcTemplate.query(sql,
-                    new Object[]{order.getDirection(), order.getSymbol(), order.getOrderId(), order.getLimitPrice()},
+                    new Object[]{order.getSymbol(), order.getOrderId(), order.getLimitPrice()},
                     new BeanPropertyRowMapper<>(Order.class));
 
         // Equivalent to order by tradetime ASC
-        selectedOrders.sort(new Comparator<Order>() {
-            @Override
-            public int compare(Order o1, Order o2) {
-                return TimeComparator.compare(o1.getTradetime(), o2.getTradetime());
-            }
-        });
+        if (order.getDirection().equals('B')) {
+            selectedOrders.sort(new Comparator<Order>() {
+
+                @Override
+                public int compare(Order o1, Order o2) {
+
+                    int cmp1 = o1.getLimitPrice().compareTo(o2.getLimitPrice());
+                    if (cmp1 == 0) {
+                        return TimeComparator.compare(o1.getTradetime(), o2.getTradetime());
+                    }
+                    return cmp1;
+                }
+
+            });
+        } else {
+            selectedOrders.sort(new Comparator<Order>() {
+
+                @Override
+                public int compare(Order o1, Order o2) {
+
+                    int cmp1 = o2.getLimitPrice().compareTo(o1.getLimitPrice());
+                    if (cmp1 == 0) {
+                        return TimeComparator.compare(o1.getTradetime(), o2.getTradetime());
+                    }
+                    return cmp1;
+                }
+
+            });
+        }
 
         selectedOrders = executeTrade(selectedOrders);
         updateTable(selectedOrders);
@@ -77,23 +101,56 @@ public class Nettingv2 implements Runnable{
         JSONArray jsonArray = new JSONArray();
 
         String orderBy = "ASC";
+        String dir = "S";
         if (order.getDirection().equals('S')) {
             orderBy = "DESC";
+            dir = "B";
         }
 
-        String sql = "select * from orders where direction != ? and symbol = ? and orderid != ? order by limitprice " + orderBy;
+        String sql = "select * from orders where direction = '" + dir + "' and symbol = ? and orderid != ?";
 
         selectedOrders = (List<Order>) (Object) jdbcTemplate.queryForList(sql,
-                                            new Object[]{order.getDirection(), order.getSymbol(), order.getOrderId()},
+                                            new Object[]{order.getSymbol(), order.getOrderId()},
                                             new BeanPropertyRowMapper<>(Order.class));
 
         // Equivalent to order by tradetime ASC
-        selectedOrders.sort(new Comparator<Order>() {
-            @Override
-            public int compare(Order o1, Order o2) {
-                return TimeComparator.compare(o1.getTradetime(), o2.getTradetime());
-            }
-        });
+        if (order.getDirection().equals('B')) {
+            selectedOrders.sort(new Comparator<Order>() {
+
+                @Override
+                public int compare(Order o1, Order o2) {
+
+                    int cmp1 = o1.getLimitPrice().compareTo(o2.getLimitPrice());
+                    if (cmp1 == 0) {
+                        return TimeComparator.compare(o1.getTradetime(), o2.getTradetime());
+                    }
+                    return cmp1;
+                }
+
+            });
+        } else {
+            selectedOrders.sort(new Comparator<Order>() {
+
+                @Override
+                public int compare(Order o1, Order o2) {
+
+                    int cmp1 = o2.getLimitPrice().compareTo(o1.getLimitPrice());
+                    if (cmp1 == 0) {
+                        return TimeComparator.compare(o1.getTradetime(), o2.getTradetime());
+                    }
+                    return cmp1;
+                }
+
+            });
+        }
+
+//        // Equivalent to order by tradetime ASC
+//        selectedOrders.sort(new Comparator<Order>() {
+//            @Override
+//            public int compare(Order o1, Order o2) {
+//                return TimeComparator.compare(o1.getTradetime(), o2.getTradetime());
+//            }
+//        });
 
         if (selectedOrders.size() == 0) {
 
