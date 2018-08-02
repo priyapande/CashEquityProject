@@ -170,11 +170,4 @@ public class SecurityImplementation implements SecurityInterface {
 
         return result.toString(4);
     }
-
-    @Override
-    public String getSecuritiesByClient(String date, String time, String clientCode){
-
-
-        return "abc";
-    }
 }
