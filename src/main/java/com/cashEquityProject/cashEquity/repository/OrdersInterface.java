@@ -15,7 +15,7 @@ public interface OrdersInterface {
     List<Order> getOrders(String code);
 
     // Delete order based on order id
-    void deleteOrder(String orderId);
+    void deleteOrder(String orderId, Character direction, String symbol);
 
     // Cancel order based on order id
     void cancelOrder(String orderId);

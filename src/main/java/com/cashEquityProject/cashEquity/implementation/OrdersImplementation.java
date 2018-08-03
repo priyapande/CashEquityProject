@@ -168,7 +168,7 @@ public class OrdersImplementation implements OrdersInterface {
     }
 
     @Override
-    public void deleteOrder(String orderId){
+    public void deleteOrder(String orderId, Character direction, String symbol){
         /*
          * Delete client order from MYSQL table using order id.
          * Args:
@@ -180,6 +180,14 @@ public class OrdersImplementation implements OrdersInterface {
         jdbcTemplate.update(sql,
                 new Object[]{orderId},
                 new int[]{Types.VARCHAR});
+
+        if (direction.equals('B')) {
+            sql = "update securities set buycount = buycount - 1 where symbol = ?";
+        } else {
+            sql = "update securities set sellcount = sellcount - 1 where symbol = ?";
+        }
+
+        jdbcTemplate.update(sql, new Object[]{symbol}, new int[]{Types.VARCHAR});
     }
 
     @Override

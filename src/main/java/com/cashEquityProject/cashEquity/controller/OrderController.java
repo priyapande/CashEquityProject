@@ -48,13 +48,13 @@ public class OrderController {
 
     }
 
-    @RequestMapping(value="/deleteOrder/{orderId}")
-    public String deleteOrder(@PathVariable String orderId){
+    @RequestMapping(value="/deleteOrder/{orderId}/{direction}/{symbol}")
+    public String deleteOrder(@PathVariable String orderId, @PathVariable Character direction, @PathVariable String symbol){
 
         JSONObject jsonObject = new JSONObject();
 
         // Delete an order using orderId
-        ordersImplementation.deleteOrder(orderId);
+        ordersImplementation.deleteOrder(orderId, direction, symbol);
 
         jsonObject.put("status", config.SUCCESS);
         return jsonObject.toString();
